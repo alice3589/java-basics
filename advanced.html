@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Java基礎マスター 応用編：パッケージとimport、クラスの調べ方(API・Javadoc)、ガベージコレクション、スレッド、相互排除と同期。実行できるコード例と自動判定の練習問題つき。">
+<title>応用（パッケージ・スレッド・同期） | Java基礎マスター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+<div id="readingBar"></div>
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="index.html">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
+  </div>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え">🌙</button>
+  </div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+
+<main id="top">
+  <div class="part-head">
+    <div class="ph-crumb"><a href="index.html">ホーム</a> ／ 応用</div>
+    <h1>⚙️ 応用</h1>
+    <p>基本のその先へ。大きなプログラムを整理する<strong>パッケージ</strong>、必要な機能を自分で探す<strong>クラスの調べ方</strong>、メモリの自動管理（<strong>GC</strong>）、複数の処理を同時に走らせる<strong>スレッド</strong>と、その安全な扱い方（<strong>同期</strong>）を学びます。</p>
+  </div>
+
+  <!-- 22 -->
+  <section id="package">
+    <div class="sec-head"><h2>22. パッケージとimport</h2></div>
+    <p><strong>パッケージ</strong>はクラスをまとめる「フォルダ（名前空間）」です。クラスが増えても整理でき、名前の衝突を防げます。Javaの標準ライブラリも <code>java.util</code> や <code>java.time</code> のようにパッケージで分かれています。</p>
+    <div class="diagram flow">
+      <div class="node"><b>java.util</b><small>パッケージ<br>（フォルダ）</small></div>
+      <div class="arrow"><span>.</span>→</div>
+      <div class="node"><b>ArrayList</b><small>クラス</small></div>
+      <div class="arrow"><span>＝</span>→</div>
+      <div class="node accent"><b>java.util.ArrayList</b><small>完全修飾名</small></div>
+    </div>
+    <h3>パッケージの宣言（ファイルの先頭）</h3>
+    <p>自分でパッケージを作るときは、ファイルの<strong>いちばん上</strong>に <code>package</code> 文を書きます（フォルダ構成と一致させます）。</p>
+    <pre><code class="language-java">// ファイル: com/example/app/Hello.java
+package com.example.app;   // このクラスが属するパッケージ
+
+public class Hello {
+    public void say() { System.out.println("こんにちは"); }
+}</code></pre>
+    <h3>importで別パッケージのクラスを使う</h3>
+    <p>別パッケージのクラスを使うときは <code>import</code> で取り込みます。<code>java.lang</code>（<code>String</code>・<code>System</code>・<code>Math</code> など）は<strong>例外的にimport不要</strong>で、いつでも使えます。</p>
+    <pre class="runnable"><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; nums = new ArrayList&lt;&gt;();
+        Collections.addAll(nums, 30, 10, 20);
+
+        Collections.sort(nums);                     // 昇順に並べ替え
+        System.out.println(nums);                   // [10, 20, 30]
+        System.out.println(Collections.max(nums));  // 30
+
+        // java.lang は import 不要（String, System, Math など）
+        System.out.println(Math.max(5, 9));         // 9
+    }
+}</code></pre>
+    <table>
+      <thead><tr><th>書き方</th><th>意味</th></tr></thead>
+      <tbody>
+        <tr><td><code>import java.util.List;</code></td><td>Listクラスだけを取り込む（推奨）</td></tr>
+        <tr><td><code>import java.util.*;</code></td><td>java.util直下の全クラスを取り込む</td></tr>
+        <tr><td><code>java.util.List</code>（そのまま記述）</td><td>importせず完全修飾名で書く</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">💡 同じパッケージのクラス同士はimport不要で使えます。パッケージは「<code>com.会社名.アプリ名</code>」のように、ドメインを逆にした名前が慣習です。</div>
+    <div class="exercise-block" data-ex="package"></div>
+    <div class="quiz-block" data-quiz="package"></div>
+  </section>
+
+  <!-- 23 -->
+  <section id="javadoc">
+    <div class="sec-head"><h2>23. クラスの調べ方（API・Javadoc）</h2></div>
+    <p>Javaには<strong>膨大な標準ライブラリ</strong>があり、必要な機能はたいてい誰かが用意してくれています。すべてを暗記する必要はありません。大切なのは<strong>「調べ方」を知ること</strong>です。その公式マニュアルが <strong>Javadoc（APIドキュメント）</strong> です。</p>
+    <h3>Javadocの読み方</h3>
+    <p>クラスのドキュメントには、次の情報が並んでいます。これを読めば、使い方が分かります。</p>
+    <div class="cards">
+      <div class="card"><span class="card-ico">🧱</span><strong>フィールド / コンストラクタ</strong><p>そのクラスが持つデータと、生成方法（<code>new</code> の引数）。</p></div>
+      <div class="card"><span class="card-ico">🔧</span><strong>メソッド一覧</strong><p>できることの一覧。名前・引数・戻り値の型が書かれている。</p></div>
+      <div class="card"><span class="card-ico">📥</span><strong>Parameters / Returns</strong><p>各メソッドの引数の意味と、返ってくる値。</p></div>
+      <div class="card"><span class="card-ico">⚠️</span><strong>Throws</strong><p>どんな例外が発生しうるか（try-catchの判断に使う）。</p></div>
+    </div>
+    <p>たとえば <code>String</code> のJavadocを開くと、<code>repeat</code>・<code>strip</code>・<code>join</code> といった便利なメソッドが見つかります。「こんな機能ないかな？」と思ったら、まずJavadocでそのクラスのMethod一覧を眺めてみましょう。</p>
+    <pre class="runnable"><code class="language-java">import java.time.LocalDate;
+
+public class Main {
+    public static void main(String[] args) {
+        // String の Javadoc を調べると見つかるメソッドたち
+        System.out.println("=".repeat(10));                   // ==========（Java 11+）
+        System.out.println(String.join("-", "a", "b", "c"));  // a-b-c
+        System.out.println("  trim me  ".strip());            // trim me（前後の空白を除去）
+
+        // 日付を扱う java.time.LocalDate も Javadoc を読めば使える
+        LocalDate d = LocalDate.of(2026, 6, 2);
+        System.out.println(d.plusDays(30));                   // 2026-07-02
+        System.out.println(d.getDayOfWeek());                 // TUESDAY（曜日）
+    }
+}</code></pre>
+    <div class="tip">💡 公式Javadocは <a href="https://docs.oracle.com/en/java/javase/21/docs/api/" target="_blank" rel="noopener">docs.oracle.com</a> で公開されています。IDE（VS Code・IntelliJ）なら、メソッド名にカーソルを合わせるだけで同じ説明がポップアップ表示されます。</div>
+    <div class="warn">⚠️ メソッドの戻り値の型と引数の型を必ず確認しましょう。「このメソッドは何を返すのか」が分かれば、次に何ができるか（メソッドチェーン）も見えてきます。</div>
+    <div class="exercise-block" data-ex="javadoc"></div>
+    <div class="quiz-block" data-quiz="javadoc"></div>
+  </section>
+
+  <!-- 24 -->
+  <section id="gc">
+    <div class="sec-head"><h2>24. ガベージコレクション</h2></div>
+    <p>C言語などでは、確保したメモリを<strong>自分で解放</strong>する必要があり、忘れるとメモリリークの原因になりました。Javaには <strong>ガベージコレクション（GC）</strong> があり、<strong>もう使われなくなったオブジェクトを自動的に見つけて回収</strong>してくれます。だから <code>free</code> や <code>delete</code> を書く必要がありません。</p>
+    <div class="diagram flow">
+      <div class="node"><b>new で生成</b><small>ヒープに置かれる</small></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>参照が無くなる</b><small>誰も指していない</small></div>
+      <div class="arrow"><span>GC</span>→</div>
+      <div class="node accent"><b>自動で回収</b><small>メモリが空く</small></div>
+    </div>
+    <h3>「使われなくなった」とは？</h3>
+    <p>どの変数からも<strong>たどれなくなった</strong>オブジェクトが回収の対象（GC対象）になります。下の例では、変数が新しい文字列を指した瞬間、元の文字列はどこからも参照されなくなります。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        String msg = new String("古いデータ");
+        System.out.println(msg);          // 古いデータ
+
+        msg = "新しいデータ";              // 元のStringはどこからも参照されなくなる
+        System.out.println(msg);          // 新しいデータ
+
+        System.gc();                      // GCの「お願い」（実行タイミングはJVM任せ）
+        System.out.println("不要になったオブジェクトはGCが自動的に回収します");
+    }
+}</code></pre>
+    <ul>
+      <li><code>System.gc()</code> はあくまで「お願い」。<strong>いつ回収するかはJVMが決める</strong>ので、呼んでも即座に動くとは限りません（普段は書かなくてよい）。</li>
+      <li>自動でも<strong>メモリリークは起こりえます</strong>。たとえばリストに入れたまま<code>remove</code>し忘れると、参照が残り続けて回収されません。</li>
+    </ul>
+    <div class="tip">💡 プログラマは「メモリ解放」ではなく「<strong>不要になった参照を残さない</strong>（使い終わったらnullを入れる・コレクションから外す）」ことを意識すればOKです。</div>
+    <div class="quiz-block" data-quiz="gc"></div>
+  </section>
+
+  <!-- 25 -->
+  <section id="thread">
+    <div class="sec-head"><h2>25. スレッド（マルチスレッド）</h2></div>
+    <p><strong>スレッド</strong>は「処理の流れ」です。ふつうのプログラムは <code>main</code> という1本の流れで動きますが、スレッドを使うと<strong>複数の処理を同時に</strong>進められます（ダウンロードしながら画面を動かす、など）。</p>
+    <div class="diagram flow">
+      <div class="node"><b>mainスレッド</b><small>start()</small></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><b>スレッド1</b><small>並行して実行</small></div>
+      <div class="node accent"><b>スレッド2</b><small>並行して実行</small></div>
+    </div>
+    <h3>Runnableで処理を渡して実行</h3>
+    <p><code>Runnable</code>（実行したい処理）を <code>Thread</code> に渡し、<code>start()</code> で動かします。<code>join()</code> を呼ぶと、そのスレッドが<strong>終わるまで待つ</strong>ことができます。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        // Runnable をスレッドにして並行実行する
+        Runnable task = () -&gt; {
+            long sum = 0;
+            for (int i = 1; i &lt;= 1000; i++) sum += i;
+            System.out.println(Thread.currentThread().getName() + " の合計: " + sum);
+        };
+
+        Thread t1 = new Thread(task, "スレッド1");
+        Thread t2 = new Thread(task, "スレッド2");
+        t1.start();   // 別の流れで動き出す
+        t2.start();
+        t1.join();    // t1 の終了を待つ
+        t2.join();    // t2 の終了を待つ
+        System.out.println("両方のスレッドが終了しました");
+    }
+}</code></pre>
+    <div class="warn">⚠️ <code>start()</code> と <code>run()</code> は違います。<code>start()</code> は<strong>新しいスレッドで</strong>実行、<code>run()</code> をそのまま呼ぶと<strong>今のスレッドで</strong>ただのメソッド呼び出しになります（並行になりません）。</div>
+    <div class="tip">💡 上の例で最初の2行（各スレッドの合計）の<strong>表示順は実行ごとに変わる</strong>ことがあります。これがスレッドの特徴です。最後の行は <code>join()</code> で待っているので必ず最後に出ます。</div>
+    <div class="exercise-block" data-ex="thread"></div>
+    <div class="quiz-block" data-quiz="thread"></div>
+  </section>
+
+  <!-- 26 -->
+  <section id="sync">
+    <div class="sec-head"><h2>26. 相互排除と同期</h2></div>
+    <p>複数のスレッドが<strong>同じデータを同時に書き換える</strong>と、結果がおかしくなることがあります（<strong>競合状態／レースコンディション</strong>）。たとえば「読み取って＋1して書き戻す」の途中に別スレッドが割り込むと、せっかくの増加が打ち消されてしまいます。</p>
+    <div class="warn">⚠️ <code>count++</code> は一見ひとつの操作ですが、内部では「読む→1足す→書く」の<strong>3ステップ</strong>です。途中で別スレッドが割り込むと、数え落としが起きます。</div>
+    <h3>synchronizedで一度に1スレッドだけ通す</h3>
+    <p><strong>相互排除（mutual exclusion）</strong>とは「<strong>同時に入れるのは1スレッドだけ</strong>」という制約のこと。<code>synchronized</code> を付けたメソッド（やブロック）は、ある瞬間に1つのスレッドしか実行できません。これで安全に共有データを更新できます。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
+    static int count = 0;
+    static synchronized void increment() { count++; }  // 一度に1スレッドだけ
+
+    public static void main(String[] args) throws InterruptedException {
+        Runnable task = () -&gt; { for (int i = 0; i &lt; 100000; i++) increment(); };
+        Thread t1 = new Thread(task);
+        Thread t2 = new Thread(task);
+        t1.start(); t2.start();
+        t1.join();  t2.join();
+        System.out.println(count);  // 200000（synchronized で正しく数えられる）
+    }
+}</code></pre>
+    <p>もし <code>synchronized</code> を外すと、合計は <code>200000</code> より<strong>少ない不安定な値</strong>になりがちです（数え落とし）。付けることで、毎回ぴったり <code>200000</code> になります。</p>
+    <h3>同期のための道具</h3>
+    <table>
+      <thead><tr><th>道具</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>synchronized</code></td><td>メソッド／ブロックを排他制御（最も基本）</td></tr>
+        <tr><td><code>java.util.concurrent.atomic.AtomicInteger</code></td><td>カウンタなどを安全に増減（ロック不要で高速）</td></tr>
+        <tr><td><code>java.util.concurrent.locks.ReentrantLock</code></td><td>より細かいロック制御</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">💡 「複数スレッドが同じ変数を書き換える」場面では必ず同期を考えます。逆に、各スレッドが別々のデータだけを触るなら同期は不要です。<a href="#thread">スレッド（25章）</a>とセットで覚えましょう。</div>
+    <div class="exercise-block" data-ex="sync"></div>
+    <div class="quiz-block" data-quiz="sync"></div>
+  </section>
+
+  <nav id="pagenav"></nav>
+  <footer>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="site-data.js?v=4"></script>
+<script src="quiz-data.js?v=4"></script>
+<script src="exercises.js?v=4"></script>
+<script src="app.js?v=4"></script>
+</body>
+</html>

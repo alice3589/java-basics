@@ -11,7 +11,7 @@
 <link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
 <link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div id="readingBar"></div>
@@ -34,8 +34,50 @@
   <div class="part-head">
     <div class="ph-crumb"><a href="index.html">ホーム</a> ／ 資料</div>
     <h1>📚 資料</h1>
-    <p>困ったときの早見表、用語の確認、そして自由にコードを試せる場所。</p>
+    <p>授業シラバスとの対応表、困ったときの早見表、用語の確認、そして自由にコードを試せる場所。</p>
   </div>
+
+  <!-- シラバス対応表 -->
+  <section id="syllabus" data-noprogress>
+    <div class="sec-head"><h2>シラバス対応表（全30週）</h2></div>
+    <p>授業の各週のテーマが、このサイトのどの章に対応するかの一覧です。授業の予習・復習にどうぞ。<br>章名のリンクから、解説・実行できるコード例・練習問題へ直接ジャンプできます。</p>
+    <table>
+      <thead><tr><th>週</th><th>シラバスのテーマ</th><th>このサイトでの対応</th></tr></thead>
+      <tbody>
+        <tr><td>第1週</td><td>ガイダンス</td><td><a href="intro.html#intro">1. Javaとは / 環境構築</a></td></tr>
+        <tr><td>第2週</td><td>オブジェクト指向へむけて</td><td><a href="oop.html#class">10. クラスとオブジェクト</a></td></tr>
+        <tr><td>第3週</td><td>クラスとインスタンス(1)</td><td><a href="oop.html#class">10. クラスとオブジェクト</a></td></tr>
+        <tr><td>第4週</td><td>クラスとインスタンス(2)</td><td><a href="oop.html#encapsulation">11. カプセル化</a></td></tr>
+        <tr><td>第5週</td><td>スーパークラスとサブクラス</td><td><a href="oop.html#inheritance">12. 継承・スーパークラス</a></td></tr>
+        <tr><td>第6週</td><td>継承</td><td><a href="oop.html#inheritance">12. 継承・スーパークラス</a></td></tr>
+        <tr><td>第7週</td><td>オーバーライド</td><td><a href="oop.html#polymorphism">13. オーバーライド・ポリモーフィズム</a></td></tr>
+        <tr><td>第8週</td><td>例外</td><td><a href="practice.html#exception">17. 例外処理</a></td></tr>
+        <tr><td>第9週</td><td>さまざまな例外と例外を用いたプログラミング</td><td><a href="practice.html#exception">17. 例外処理（さまざまな例外）</a></td></tr>
+        <tr><td>第10週</td><td>インターフェース</td><td><a href="oop.html#interface">14. インターフェース</a></td></tr>
+        <tr><td>第11週</td><td>ガベージコレクション</td><td><a href="advanced.html#gc">24. ガベージコレクション</a></td></tr>
+        <tr><td>第12週</td><td>スレッド(1)</td><td><a href="advanced.html#thread">25. スレッド（マルチスレッド）</a></td></tr>
+        <tr><td>第13週</td><td>スレッド(2)</td><td><a href="advanced.html#thread">25. スレッド（マルチスレッド）</a></td></tr>
+        <tr><td>第14週</td><td>パッケージ</td><td><a href="advanced.html#package">22. パッケージとimport</a></td></tr>
+        <tr><td>第15週</td><td>試験範囲復習</td><td><a href="#cheatsheet">チートシート</a> / <a href="#glossary">用語集</a>（1〜17章の復習）</td></tr>
+        <tr><td>第16週</td><td>ファイルの入出力とクラスの調べ方(1)</td><td><a href="practice.html#fileio">20. ファイル入出力</a> ＋ <a href="advanced.html#javadoc">23. クラスの調べ方</a></td></tr>
+        <tr><td>第17週</td><td>ファイルの入出力とクラスの調べ方(2)</td><td><a href="practice.html#fileio">20. ファイル入出力</a> ＋ <a href="advanced.html#javadoc">23. クラスの調べ方</a></td></tr>
+        <tr><td>第18週</td><td>コレクション</td><td><a href="practice.html#collection">18. コレクション</a></td></tr>
+        <tr><td>第19週</td><td>デザインパターンとは</td><td><a href="patterns.html#dp-intro">27. デザインパターンとは</a></td></tr>
+        <tr><td>第20週</td><td>相互排除と同期</td><td><a href="advanced.html#sync">26. 相互排除と同期</a></td></tr>
+        <tr><td>第21週</td><td>試験範囲復習</td><td><a href="#cheatsheet">チートシート</a> / <a href="#glossary">用語集</a>（総復習）</td></tr>
+        <tr><td>第22週</td><td>Iterator パターン</td><td><a href="patterns.html#iterator">28. Iterator パターン</a></td></tr>
+        <tr><td>第23週</td><td>Adapter パターン</td><td><a href="patterns.html#adapter">29. Adapter パターン</a></td></tr>
+        <tr><td>第24週</td><td>サブクラスに任せるデザインパターン</td><td><a href="patterns.html#template">30. Template Method パターン</a></td></tr>
+        <tr><td>第25週</td><td>インスタンスをつくるデザインパターン</td><td><a href="patterns.html#singleton">31. Singleton パターン</a></td></tr>
+        <tr><td>第26週</td><td>分けて考えるデザインパターン</td><td><a href="patterns.html#strategy">32. Strategy パターン</a></td></tr>
+        <tr><td>第27週</td><td>同一視するデザインパターン</td><td><a href="patterns.html#composite">33. Composite パターン</a></td></tr>
+        <tr><td>第28週</td><td>複数の構造を渡り歩くデザインパターン</td><td><a href="patterns.html#visitor">34. Visitor パターン</a></td></tr>
+        <tr><td>第29週</td><td>状態管理のデザインパターン</td><td><a href="patterns.html#state">35. State パターン</a></td></tr>
+        <tr><td>第30週</td><td>相互排除と同期(2)</td><td><a href="advanced.html#sync">26. 相互排除と同期（発展）</a></td></tr>
+      </tbody>
+    </table>
+    <div class="tip">💡 第3〜13・19〜30週は<a href="oop.html">オブジェクト指向</a>・<a href="advanced.html">応用</a>・<a href="patterns.html">デザインパターン</a>が中心。デザインパターン編では、各週の代表パターンを1つずつ実装しながら学べます。</div>
+  </section>
 
   <!-- プレイグラウンド -->
   <section id="playground" data-noprogress>
@@ -161,9 +203,9 @@ s.split(",");</code></pre>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
-<script src="site-data.js?v=3"></script>
-<script src="quiz-data.js?v=3"></script>
-<script src="exercises.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="site-data.js?v=4"></script>
+<script src="quiz-data.js?v=4"></script>
+<script src="exercises.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@
 <link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
 <link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div id="readingBar"></div>
@@ -75,6 +75,67 @@
     }
 }</code></pre>
     <div class="warn">⚠️ よく出会う例外： <code>NullPointerException</code>（nullを使った）、<code>NumberFormatException</code>（数値変換失敗）、<code>ArrayIndexOutOfBoundsException</code>（配列範囲外）。</div>
+
+    <h3>検査例外と非検査例外</h3>
+    <p>Javaの例外は2種類あります。<strong>検査例外（チェック例外）</strong>は「起こりうるので必ず対処してね」とコンパイラが要求するもの（<code>try-catch</code> か <code>throws</code> が必須）。<strong>非検査例外</strong>はプログラムのミスが原因で、対処は任意です。</p>
+    <table>
+      <thead><tr><th></th><th>検査例外</th><th>非検査例外（RuntimeException系）</th></tr></thead>
+      <tbody>
+        <tr><td>例</td><td><code>IOException</code>, <code>SQLException</code></td><td><code>NullPointerException</code>, <code>IllegalArgumentException</code></td></tr>
+        <tr><td>対処</td><td><strong>必須</strong>（try-catch か throws）</td><td>任意（直すべきはコードのバグ）</td></tr>
+        <tr><td>原因</td><td>外部要因（ファイル無し等）</td><td>プログラムの間違い</td></tr>
+      </tbody>
+    </table>
+
+    <h3>独自の例外クラスを作る</h3>
+    <p><code>Exception</code>（や <code>RuntimeException</code>）を継承すると、業務に合った<strong>自分専用の例外</strong>を作れます。名前自体が「何が起きたか」を表すので、読みやすくなります。</p>
+    <pre class="runnable"><code class="language-java">// 独自の例外クラス（検査例外）
+class InsufficientBalanceException extends Exception {
+    InsufficientBalanceException(String msg) { super(msg); }
+}
+
+class Wallet {
+    private int balance;
+    Wallet(int balance) { this.balance = balance; }
+    void pay(int amount) throws InsufficientBalanceException {
+        if (amount > balance) {
+            throw new InsufficientBalanceException("残高不足: 残り" + balance + "円");
+        }
+        balance -= amount;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Wallet w = new Wallet(1000);
+        try {
+            w.pay(300);
+            System.out.println("300円支払いました");
+            w.pay(800);   // 残高700円では払えない → 例外
+        } catch (InsufficientBalanceException e) {
+            System.out.println("エラー: " + e.getMessage());
+        }
+    }
+}</code></pre>
+
+    <h3>try-with-resources（自動で後片付け）</h3>
+    <p>ファイルなど「使い終わったら閉じる」必要があるものは、<code>try (...)</code> の括弧内で開くと、<strong>ブロックを抜けるときに自動で <code>close()</code> が呼ばれます</strong>（<code>AutoCloseable</code> を実装した型が対象）。閉じ忘れを防げます。</p>
+    <pre class="runnable"><code class="language-java">class Resource implements AutoCloseable {
+    private final String name;
+    Resource(String name) { this.name = name; System.out.println(name + " を開いた"); }
+    void use() { System.out.println(name + " を使用中"); }
+    public void close() { System.out.println(name + " を閉じた"); }  // 自動で呼ばれる
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (Resource r = new Resource("ファイル")) {   // try-with-resources
+            r.use();
+        }   // ブロックを抜けるとき自動的に close() が呼ばれる
+        System.out.println("完了");
+    }
+}</code></pre>
+    <div class="tip">💡 <a href="#fileio">ファイル入出力（20章）</a>でも、本来は <code>try-with-resources</code> でストリームを安全に閉じます。複数の例外を1つの <code>catch</code> でまとめたいときは <code>catch (IOException | SQLException e)</code> のように <code>|</code> で書けます（マルチキャッチ）。</div>
     <div class="exercise-block" data-ex="exception"></div>
     <div class="quiz-block" data-quiz="exception"></div>
   </section>
@@ -245,9 +306,9 @@ System.out.println(upper); // [SUZUKI, TANAKA]</code></pre>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
-<script src="site-data.js?v=3"></script>
-<script src="quiz-data.js?v=3"></script>
-<script src="exercises.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="site-data.js?v=4"></script>
+<script src="quiz-data.js?v=4"></script>
+<script src="exercises.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

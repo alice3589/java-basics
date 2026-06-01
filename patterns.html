@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Java基礎マスター デザインパターン編：Iterator・Adapter・Template Method・Singleton・Strategy・Composite・Visitor・State。GoFの代表的パターンを、実行できるコード例と自動判定の練習問題つきで学べます。">
+<title>デザインパターン | Java基礎マスター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+<div id="readingBar"></div>
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="index.html">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
+  </div>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え">🌙</button>
+  </div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+
+<main id="top">
+  <div class="part-head">
+    <div class="ph-crumb"><a href="index.html">ホーム</a> ／ デザインパターン</div>
+    <h1>🎨 デザインパターン</h1>
+    <p>先人たちが見つけた「<strong>よくある設計の定石</strong>」。オブジェクト指向（<a href="oop.html">10〜16章</a>）の知識を土台に、再利用しやすく変更に強い設計を学びます。GoF（Gang of Four）の代表的なパターンを、手を動かして理解しましょう。</p>
+  </div>
+
+  <!-- 27 -->
+  <section id="dp-intro">
+    <div class="sec-head"><h2>27. デザインパターンとは</h2></div>
+    <p><strong>デザインパターン</strong>とは、ソフトウェア設計でくり返し現れる問題に対する「<strong>定番の解き方</strong>」に名前を付けたものです。1994年にGoF（4人組）が23個のパターンとしてまとめました。パターンを知っていると、設計の引き出しが増え、他の人と「ここはStrategyで」のように<strong>短い言葉で意図を共有</strong>できます。</p>
+    <h3>すべての土台：インターフェースにプログラミングする</h3>
+    <p>多くのパターンに共通する考え方が「<strong>具体的なクラスではなく、インターフェース（抽象）に依存する</strong>」ことです。下の例では、<code>Main</code> は <code>Japanese</code> や <code>English</code> という具体クラスを意識せず、<code>Greeter</code> という「約束」だけを使っています。だから新しい言語を足しても <code>Main</code> は変えずに済みます。</p>
+    <pre class="runnable"><code class="language-java">interface Greeter { String greet(); }
+class Japanese implements Greeter { public String greet() { return "こんにちは"; } }
+class English  implements Greeter { public String greet() { return "Hello"; } }
+
+public class Main {
+    public static void main(String[] args) {
+        // 具体クラスに依存せず、Greeter という「約束」だけを使う
+        Greeter[] greeters = { new Japanese(), new English() };
+        for (Greeter g : greeters) {
+            System.out.println(g.greet());
+        }
+    }
+}</code></pre>
+    <h3>パターンの3つの分類</h3>
+    <div class="cards">
+      <div class="card"><span class="card-ico">🏭</span><strong>生成に関するパターン</strong><p>オブジェクトの作り方を工夫する。<br>例：Singleton・Factory Method・Builder</p></div>
+      <div class="card"><span class="card-ico">🧱</span><strong>構造に関するパターン</strong><p>クラスやオブジェクトの組み合わせ方。<br>例：Adapter・Composite・Decorator</p></div>
+      <div class="card"><span class="card-ico">🔁</span><strong>振る舞いに関するパターン</strong><p>処理の分担・連携のさせ方。<br>例：Iterator・Strategy・State・Visitor</p></div>
+    </div>
+    <div class="tip">💡 この章では代表的な8パターンを扱います。パターンは「暗記するもの」ではなく「<strong>困ったときに思い出す道具箱</strong>」。まずは「どんな問題を解くためのものか」をつかみましょう。</div>
+    <div class="quiz-block" data-quiz="dp-intro"></div>
+  </section>
+
+  <!-- 28 -->
+  <section id="iterator">
+    <div class="sec-head"><h2>28. Iterator パターン</h2></div>
+    <p><strong>Iterator（反復子）</strong>は、集まり（コレクション）の<strong>中身を1つずつ順番に取り出す</strong>方法を、中の構造から切り離すパターンです。「次はある？(<code>hasNext</code>)」「次をちょうだい(<code>next</code>)」という共通の窓口を用意します。</p>
+    <p>Javaでは <code>Iterable</code> を実装すると、<strong>拡張for文（for-each）がそのまま使える</strong>ようになります。配列でもリストでも木構造でも、使う側は同じ書き方で走査できるのが利点です。</p>
+    <pre class="runnable"><code class="language-java">import java.util.Iterator;
+
+class BookShelf implements Iterable&lt;String&gt; {
+    private final String[] books;
+    BookShelf(String... books) { this.books = books; }
+
+    public Iterator&lt;String&gt; iterator() {       // 「次の要素」を返す係を用意
+        return new Iterator&lt;&gt;() {
+            private int i = 0;
+            public boolean hasNext() { return i &lt; books.length; }
+            public String next()     { return books[i++]; }
+        };
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BookShelf shelf = new BookShelf("Java入門", "デザインパターン", "アルゴリズム");
+        for (String title : shelf) {           // Iterator のおかげで for-each が使える
+            System.out.println(title);
+        }
+    }
+}</code></pre>
+    <div class="tip">💡 <a href="practice.html#collection">コレクション（18章）</a>の <code>List</code> や <code>Set</code> がfor-eachで回せるのは、内部でIteratorパターンが使われているからです。</div>
+    <div class="exercise-block" data-ex="iterator"></div>
+    <div class="quiz-block" data-quiz="iterator"></div>
+  </section>
+
+  <!-- 29 -->
+  <section id="adapter">
+    <div class="sec-head"><h2>29. Adapter パターン</h2></div>
+    <p><strong>Adapter（適合）</strong>は、<strong>既にあるクラスを、別のインターフェースに合わせて使えるようにする</strong>パターンです。電源プラグの変換アダプタと同じ発想。「中身は使いたいが、形（インターフェース）が合わない」ときの橋渡しです。</p>
+    <div class="diagram flow">
+      <div class="node"><b>Celsius</b><small>既存クラス<br>getCelsius()</small></div>
+      <div class="arrow"><span>包む</span>→</div>
+      <div class="node"><b>Adapter</b><small>変換役</small></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><b>Fahrenheit</b><small>欲しい形</small></div>
+    </div>
+    <p>既存の <code>Celsius</code>（摂氏）を変更せずに、クライアントが欲しい <code>Fahrenheit</code>（華氏）インターフェースに「適合」させています。</p>
+    <pre class="runnable"><code class="language-java">// 既存のクラス（変更できない想定）
+class Celsius {
+    private final double c;
+    Celsius(double c) { this.c = c; }
+    double getCelsius() { return c; }
+}
+
+// クライアントが欲しいインターフェース
+interface Fahrenheit { double getFahrenheit(); }
+
+// アダプタ：Celsius を Fahrenheit に「適合」させる
+class TemperatureAdapter implements Fahrenheit {
+    private final Celsius celsius;
+    TemperatureAdapter(Celsius c) { this.celsius = c; }
+    public double getFahrenheit() {
+        return celsius.getCelsius() * 9 / 5 + 32;   // 既存の機能を変換して提供
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Fahrenheit f = new TemperatureAdapter(new Celsius(25));
+        System.out.println(f.getFahrenheit());   // 77.0
+    }
+}</code></pre>
+    <div class="tip">💡 ライブラリの古いクラスを新しいコードに合わせたいときや、外部APIを自分のアプリの型に揃えたいときに活躍します。</div>
+    <div class="exercise-block" data-ex="adapter"></div>
+    <div class="quiz-block" data-quiz="adapter"></div>
+  </section>
+
+  <!-- 30 -->
+  <section id="template">
+    <div class="sec-head"><h2>30. Template Method パターン <small style="font-size:14px;color:var(--text-dim);">― サブクラスに任せる</small></h2></div>
+    <p><strong>Template Method</strong>は、<strong>処理の「手順（骨組み）」を親クラスで固定し、具体的な中身だけをサブクラスに任せる</strong>パターンです。共通の流れはひとつにまとめ、変わる部分だけを差し替えます。</p>
+    <p>下の例では <code>output()</code> が手順（ヘッダ→本体→フッタ）を固定し、本体の <code>printBody()</code> だけをサブクラスが実装します。<code>final</code> を付けることで「手順は変えさせない」意図も表せます。</p>
+    <pre class="runnable"><code class="language-java">abstract class Report {
+    // テンプレートメソッド：処理の骨組み（手順）を固定する
+    final void output() {
+        printHeader();
+        printBody();      // 中身だけサブクラスに任せる
+        printFooter();
+    }
+    void printHeader() { System.out.println("=== レポート ==="); }
+    abstract void printBody();
+    void printFooter() { System.out.println("=== 以上 ==="); }
+}
+
+class SalesReport extends Report {
+    void printBody() { System.out.println("売上: 1,000,000円"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new SalesReport().output();
+    }
+}</code></pre>
+    <div class="tip">💡 同じテーマの仲間に <strong>Factory Method</strong> パターンがあります。「どのインスタンスを作るか」をサブクラスに任せる作り方で、生成手順を共通化しつつ、作る対象だけを差し替えられます。</div>
+    <div class="exercise-block" data-ex="template"></div>
+    <div class="quiz-block" data-quiz="template"></div>
+  </section>
+
+  <!-- 31 -->
+  <section id="singleton">
+    <div class="sec-head"><h2>31. Singleton パターン <small style="font-size:14px;color:var(--text-dim);">― インスタンスをつくる</small></h2></div>
+    <p><strong>Singleton</strong>は、あるクラスのインスタンスが<strong>プログラム全体でただ1つ</strong>だけになることを保証するパターンです。設定情報・ログ・接続プールのように「いくつもあると困る」ものに使います。</p>
+    <p>コツは2つ。<strong>コンストラクタを <code>private</code> にして外から <code>new</code> できなくし</strong>、<strong>唯一の入口 <code>getInstance()</code> から同じ実体を返す</strong>ことです。</p>
+    <pre class="runnable"><code class="language-java">class Config {
+    private static final Config INSTANCE = new Config();  // 唯一の実体
+    private int count = 0;
+    private Config() {}                                   // コンストラクタを隠す
+    static Config getInstance() { return INSTANCE; }      // 入口は1つだけ
+    void add() { count++; }
+    int getCount() { return count; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Config a = Config.getInstance();
+        Config b = Config.getInstance();
+        System.out.println(a == b);        // true（常に同じ1個）
+        a.add(); a.add(); b.add();
+        System.out.println(b.getCount());  // 3（状態を共有している）
+    }
+}</code></pre>
+    <div class="warn">⚠️ Singletonは便利ですが「どこからでも触れるグローバル変数」になりがちで、使いすぎると依存関係が見えにくくなります。本当に1つであるべきか、よく考えて使いましょう。</div>
+    <div class="tip">💡 同じ「インスタンスをつくる」仲間に <strong>Builder</strong>（複雑なオブジェクトを段階的に組み立てる）や <strong>Prototype</strong>（複製して作る）があります。</div>
+    <div class="exercise-block" data-ex="singleton"></div>
+    <div class="quiz-block" data-quiz="singleton"></div>
+  </section>
+
+  <!-- 32 -->
+  <section id="strategy">
+    <div class="sec-head"><h2>32. Strategy パターン <small style="font-size:14px;color:var(--text-dim);">― 分けて考える</small></h2></div>
+    <p><strong>Strategy（戦略）</strong>は、<strong>アルゴリズム（やり方）を部品として差し替えられる</strong>ようにするパターンです。「何をするか」を呼び出し側、「どうやるか」を戦略オブジェクトに分け、<code>if</code> 文の分岐ではなく<strong>オブジェクトの差し替え</strong>でふるまいを変えます。</p>
+    <pre class="runnable"><code class="language-java">interface Discount { int apply(int price); }
+class NoDiscount   implements Discount { public int apply(int p) { return p; } }
+class HalfDiscount implements Discount { public int apply(int p) { return p / 2; } }
+
+public class Main {
+    static int checkout(int price, Discount d) {   // 値引きの「やり方」を差し替えられる
+        return d.apply(price);
+    }
+    public static void main(String[] args) {
+        System.out.println(checkout(1000, new NoDiscount()));    // 1000
+        System.out.println(checkout(1000, new HalfDiscount()));  // 500
+    }
+}</code></pre>
+    <div class="tip">💡 新しい値引き（例：3割引）を足したくなっても、<code>Discount</code> を実装したクラスを増やすだけ。既存コードを書き換えずに拡張できます（開放閉鎖の原則）。<a href="practice.html#modern">ラムダ式（21章）</a>を使うと戦略をさらに簡潔に書けます。</div>
+    <div class="exercise-block" data-ex="strategy"></div>
+    <div class="quiz-block" data-quiz="strategy"></div>
+  </section>
+
+  <!-- 33 -->
+  <section id="composite">
+    <div class="sec-head"><h2>33. Composite パターン <small style="font-size:14px;color:var(--text-dim);">― 同一視する</small></h2></div>
+    <p><strong>Composite（複合）</strong>は、<strong>「単体」と「容れ物」を同じ型として扱える</strong>ようにするパターンです。フォルダの中にファイルやフォルダが入る——という<strong>木構造</strong>を、再帰的に同じ操作で処理できます。</p>
+    <div class="diagram tree-diag">
+      <div class="tnode parent">Directory<small>size() = 合計</small></div>
+      <div class="tlines"></div>
+      <div class="tchildren">
+        <div class="tnode">File<small>100</small></div>
+        <div class="tnode">File<small>200</small></div>
+        <div class="tnode">Directory<small>File(50)</small></div>
+      </div>
+    </div>
+    <p><code>File</code> も <code>Directory</code> も同じ <code>Entry</code> 型なので、使う側は中身を気にせず <code>size()</code> を呼ぶだけ。<code>Directory</code> は子の <code>size()</code> を再帰的に合計します。</p>
+    <pre class="runnable"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+abstract class Entry { abstract int size(); }      // 共通の型
+
+class File extends Entry {                          // 「葉」：単体
+    private final int size;
+    File(int size) { this.size = size; }
+    int size() { return size; }
+}
+
+class Directory extends Entry {                     // 「枝」：容れ物
+    private final List&lt;Entry&gt; children = new ArrayList&lt;&gt;();
+    Directory add(Entry e) { children.add(e); return this; }
+    int size() {                                    // 中身を再帰的に合計
+        int total = 0;
+        for (Entry e : children) total += e.size();
+        return total;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Directory root = new Directory();
+        root.add(new File(100)).add(new File(200));
+        Directory sub = new Directory();
+        sub.add(new File(50));
+        root.add(sub);
+        System.out.println(root.size());   // 350（File も Directory も同じ size() で扱える）
+    }
+}</code></pre>
+    <div class="tip">💡 似た仲間に <strong>Decorator</strong> パターンがあります。オブジェクトを「包んで」機能を少しずつ足していく方法で、こちらも「包むものと包まれるものを同一視」します。</div>
+    <div class="exercise-block" data-ex="composite"></div>
+    <div class="quiz-block" data-quiz="composite"></div>
+  </section>
+
+  <!-- 34 -->
+  <section id="visitor">
+    <div class="sec-head"><h2>34. Visitor パターン <small style="font-size:14px;color:var(--text-dim);">― 構造を渡り歩く</small></h2></div>
+    <p><strong>Visitor（訪問者）</strong>は、<strong>データ構造（要素）と、それに対する処理（訪問者）を分離する</strong>パターンです。要素のクラスを変えずに、新しい処理を「訪問者」として後から追加できます。</p>
+    <p>各要素は <code>accept(visitor)</code> で訪問者を受け入れ、自分に合った <code>visit</code> を呼んでもらいます（ダブルディスパッチ）。下の例では、商品構造はそのままに「合計金額を計算する」処理を訪問者として持ち込んでいます。</p>
+    <pre class="runnable"><code class="language-java">interface Visitor {
+    void visit(Book b);
+    void visit(DVD d);
+}
+abstract class Item { abstract void accept(Visitor v); }
+class Book extends Item {
+    int price; Book(int p) { price = p; }
+    void accept(Visitor v) { v.visit(this); }   // 自分の型に合った visit を呼ぶ
+}
+class DVD extends Item {
+    int price; DVD(int p) { price = p; }
+    void accept(Visitor v) { v.visit(this); }
+}
+class PriceVisitor implements Visitor {          // 「処理」を外から持ち込む
+    int total = 0;
+    public void visit(Book b) { total += b.price; }
+    public void visit(DVD d)  { total += d.price * 2; }  // DVDは2倍で集計
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Item[] items = { new Book(1000), new DVD(500), new Book(800) };
+        PriceVisitor v = new PriceVisitor();
+        for (Item it : items) it.accept(v);
+        System.out.println(v.total);   // 1000 + 1000 + 800 = 2800
+    }
+}</code></pre>
+    <div class="tip">💡 「<strong>構造を渡り歩く</strong>」仲間に <strong>Chain of Responsibility</strong> があります。処理できる担当者が見つかるまで、要求を次々と後ろの担当者へ渡していくパターンです。</div>
+    <div class="exercise-block" data-ex="visitor"></div>
+    <div class="quiz-block" data-quiz="visitor"></div>
+  </section>
+
+  <!-- 35 -->
+  <section id="state">
+    <div class="sec-head"><h2>35. State パターン <small style="font-size:14px;color:var(--text-dim);">― 状態管理</small></h2></div>
+    <p><strong>State（状態）</strong>は、<strong>「状態」そのものをクラスにして、状態ごとのふるまいと遷移をオブジェクトに持たせる</strong>パターンです。<code>if</code> や <code>switch</code> の山になりがちな状態遷移を、すっきり整理できます。</p>
+    <div class="diagram flow">
+      <div class="node accent"><b>赤</b><small>next →</small></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><b>緑</b><small>next →</small></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><b>黄</b><small>next → 赤</small></div>
+    </div>
+    <p>信号機を例に。各状態（赤・緑・黄）が「自分の次はどれか」を知っているので、呼び出し側は <code>next()</code> を呼ぶだけです。</p>
+    <pre class="runnable"><code class="language-java">interface State { State next(); String name(); }   // 状態ごとに「次」を持つ
+class Red    implements State { public State next() { return new Green();  } public String name() { return "赤"; } }
+class Green  implements State { public State next() { return new Yellow(); } public String name() { return "緑"; } }
+class Yellow implements State { public State next() { return new Red();    } public String name() { return "黄"; } }
+
+public class Main {
+    public static void main(String[] args) {
+        State s = new Red();
+        for (int i = 0; i &lt; 4; i++) {
+            System.out.println(s.name());
+            s = s.next();           // if 文の山ではなく、状態オブジェクトが遷移を知っている
+        }
+    }
+}</code></pre>
+    <div class="tip">💡 同じ「状態管理」の仲間に、状態の変化を他のオブジェクトへ自動で知らせる <strong>Observer</strong>、ある時点の状態を保存して後で戻せる <strong>Memento</strong> があります。</div>
+    <div class="exercise-block" data-ex="state"></div>
+    <div class="quiz-block" data-quiz="state"></div>
+  </section>
+
+  <nav id="pagenav"></nav>
+  <footer>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="site-data.js?v=4"></script>
+<script src="quiz-data.js?v=4"></script>
+<script src="exercises.js?v=4"></script>
+<script src="app.js?v=4"></script>
+</body>
+</html>
