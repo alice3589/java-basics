@@ -146,7 +146,10 @@
       body: JSON.stringify({
         code: buildProgram(code, wrap),
         compiler: COMPILER,
-        stdin: stdin || ""
+        stdin: stdin || "",
+        // 文字化け対策：javacはUTF-8でソースを読み、実行時の標準出力/エラーもUTF-8で出す
+        "compiler-option-raw": "-encoding\nUTF-8",
+        "runtime-option-raw": "-Dstdout.encoding=UTF-8\n-Dstderr.encoding=UTF-8"
       })
     });
     if (!res.ok) throw new Error("サーバーエラー (" + res.status + ")");
