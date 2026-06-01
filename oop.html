@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Java基礎マスター オブジェクト指向編：クラスとオブジェクト、カプセル化、継承、ポリモーフィズム、インターフェース、enum/record、ジェネリクス。自動判定の練習問題つき。">
+<title>オブジェクト指向 | Java基礎マスター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<div id="readingBar"></div>
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="index.html">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
+  </div>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え">🌙</button>
+  </div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+
+<main id="top">
+  <div class="part-head">
+    <div class="ph-crumb"><a href="index.html">ホーム</a> ／ オブジェクト指向</div>
+    <h1>🧩 オブジェクト指向</h1>
+    <p>Javaの心臓部。クラスで「モノ」を設計し、継承やインターフェースで広げていく考え方を、手を動かして身につけます。</p>
+  </div>
+
+  <!-- 10 -->
+  <section id="class">
+    <div class="sec-head"><h2>10. クラスとオブジェクト</h2></div>
+    <p>Javaの中心となる考え方。<strong>クラス＝設計図</strong>、<strong>オブジェクト（インスタンス）＝設計図から作った実物</strong>です。たい焼きの型がクラス、焼き上がったたい焼きがオブジェクト。</p>
+    <div class="diagram class-diag">
+      <div class="blueprint">
+        <div class="bp-title">class Person <small>（設計図）</small></div>
+        <div class="bp-row field">name, age <span>← フィールド（持っているデータ）</span></div>
+        <div class="bp-row method">introduce() <span>← メソッド（できること）</span></div>
+      </div>
+      <div class="bp-arrow">new →</div>
+      <div class="instances">
+        <div class="inst">佐藤 / 20</div>
+        <div class="inst">鈴木 / 25</div>
+      </div>
+    </div>
+    <pre class="runnable"><code class="language-java">// 設計図（クラス）
+class Person {
+    String name;  // フィールド（属性）
+    int age;
+
+    // コンストラクタ（生成時に呼ばれる初期化処理）
+    Person(String name, int age) {
+        this.name = name;  // this = 自分自身のフィールド
+        this.age = age;
+    }
+
+    // メソッド（振る舞い）
+    void introduce() {
+        System.out.println("私は" + name + "、" + age + "歳です");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // 実物（オブジェクト）を作る
+        Person p1 = new Person("佐藤", 20);
+        Person p2 = new Person("鈴木", 25);
+
+        p1.introduce(); // 私は佐藤、20歳です
+        p2.introduce(); // 私は鈴木、25歳です
+    }
+}</code></pre>
+    <ul>
+      <li><strong>フィールド</strong>…オブジェクトが持つデータ / <strong>メソッド</strong>…動作</li>
+      <li><strong>コンストラクタ</strong>…<code>new</code> したとき自動で呼ばれる初期化処理</li>
+      <li><code>this</code>…「自分自身のオブジェクト」</li>
+    </ul>
+    <div class="exercise-block" data-ex="class"></div>
+    <div class="quiz-block" data-quiz="class"></div>
+  </section>
+
+  <!-- 11 -->
+  <section id="encapsulation">
+    <div class="sec-head"><h2>11. カプセル化（アクセス修飾子）</h2></div>
+    <p>フィールドを外から勝手に書き換えられないように隠し、専用のメソッド（getter/setter）を通してアクセスさせる仕組み。安全なプログラムの基本です。</p>
+    <pre class="runnable"><code class="language-java">class BankAccount {
+    private int balance = 0;   // private = クラスの外から直接触れない
+
+    public void deposit(int amount) {
+        if (amount > 0) {       // 不正な値をチェックできる
+            balance += amount;
+        }
+    }
+    public int getBalance() {   // 残高を取得（getter）
+        return balance;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount acc = new BankAccount();
+        acc.deposit(1000);
+        acc.deposit(-500);  // 無視される（チェックしているから）
+        // acc.balance = 999999; // ← privateなのでコンパイルエラー（守られる）
+        System.out.println("残高: " + acc.getBalance()); // 1000
+    }
+}</code></pre>
+    <h3>アクセス修飾子</h3>
+    <table>
+      <thead><tr><th>修飾子</th><th>アクセスできる範囲</th></tr></thead>
+      <tbody>
+        <tr><td><code>public</code></td><td>どこからでも</td></tr>
+        <tr><td><code>protected</code></td><td>同じパッケージ＋サブクラス</td></tr>
+        <tr><td>(なし)</td><td>同じパッケージ内</td></tr>
+        <tr><td><code>private</code></td><td>同じクラス内のみ</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">💡 「フィールドはprivate、操作はpublicメソッドで」が基本パターンです。</div>
+    <div class="exercise-block" data-ex="encapsulation"></div>
+    <div class="quiz-block" data-quiz="encapsulation"></div>
+  </section>
+
+  <!-- 12 -->
+  <section id="inheritance">
+    <div class="sec-head"><h2>12. 継承</h2></div>
+    <p><strong>継承</strong>は既存クラスの機能を引き継いで新しいクラスを作る仕組み。共通部分を親クラスにまとめられます。</p>
+    <div class="diagram tree-diag">
+      <div class="tnode parent">Animal<small>name / eat()</small></div>
+      <div class="tlines"></div>
+      <div class="tchildren">
+        <div class="tnode">Dog<small>bark()</small></div>
+        <div class="tnode">Cat<small>eat() を上書き</small></div>
+      </div>
+    </div>
+    <pre class="runnable"><code class="language-java">class Animal {                 // 親クラス（スーパークラス）
+    String name;
+    Animal(String name) { this.name = name; }
+    void eat() { System.out.println(name + "は食べる"); }
+}
+
+class Dog extends Animal {      // 子クラス … extends で継承
+    Dog(String name) { super(name); }   // 親のコンストラクタを呼ぶ
+    void bark() { System.out.println(name + "はワンと鳴く"); }
+}
+
+class Cat extends Animal {
+    Cat(String name) { super(name); }
+    @Override
+    void eat() { System.out.println(name + "は魚を食べる"); } // 上書き(オーバーライド)
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog("ポチ");
+        dog.eat();   // 親から継承 → ポチは食べる
+        dog.bark();  // 子で追加   → ポチはワンと鳴く
+
+        Cat cat = new Cat("タマ");
+        cat.eat();   // 上書き      → タマは魚を食べる
+    }
+}</code></pre>
+    <div class="tip">💡 <code>@Override</code> は「親のメソッドを上書きします」という目印。書いておくと書き間違いを防げます。<code>super(...)</code> は親のコンストラクタ呼び出し。</div>
+    <div class="exercise-block" data-ex="inheritance"></div>
+    <div class="quiz-block" data-quiz="inheritance"></div>
+  </section>
+
+  <!-- 13 -->
+  <section id="polymorphism">
+    <div class="sec-head"><h2>13. ポリモーフィズム / 抽象クラス</h2></div>
+    <p><strong>ポリモーフィズム（多態性）</strong>は、同じ呼び出しでもオブジェクトの種類によって違う動きをすること。</p>
+    <pre class="runnable"><code class="language-java">abstract class Shape {
+    abstract double area();           // 中身なし。子で必ず実装させる
+    void show() { System.out.println(getClass().getSimpleName() + "の面積は " + area()); }
+}
+class Circle extends Shape {
+    double r; Circle(double r){ this.r = r; }
+    @Override double area(){ return r * r * 3.14; }
+}
+class Rect extends Shape {
+    double w, h; Rect(double w, double h){ this.w = w; this.h = h; }
+    @Override double area(){ return w * h; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Shape[] shapes = { new Circle(2), new Rect(3, 4) };
+        for (Shape s : shapes) {
+            s.show();   // 同じ s.show() でも型に応じて結果が変わる
+        }
+    }
+}</code></pre>
+    <div class="tip">💡 <strong>抽象クラス（abstract）</strong>は「中身が未定のメソッド」を持つ、継承前提のクラス。直接 <code>new</code> できず、子クラスが <code>area()</code> を必ず実装します。</div>
+    <div class="exercise-block" data-ex="polymorphism"></div>
+    <div class="quiz-block" data-quiz="polymorphism"></div>
+  </section>
+
+  <!-- 14 -->
+  <section id="interface">
+    <div class="sec-head"><h2>14. インターフェース</h2></div>
+    <p><strong>インターフェース</strong>は「できること（メソッドの一覧）」だけを定めた約束ごと。実装クラスはその約束を必ず守ります。複数同時に実装できるのが強み。</p>
+    <pre class="runnable"><code class="language-java">interface Flyable  { void fly();  }
+interface Swimmable{ void swim(); }
+
+// implements で実装（複数OK）
+class Duck implements Flyable, Swimmable {
+    @Override public void fly()  { System.out.println("カモが飛ぶ"); }
+    @Override public void swim() { System.out.println("カモが泳ぐ"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Duck duck = new Duck();
+        duck.fly();
+        duck.swim();
+    }
+}</code></pre>
+    <h3>抽象クラスとの違い</h3>
+    <table>
+      <thead><tr><th></th><th>抽象クラス</th><th>インターフェース</th></tr></thead>
+      <tbody>
+        <tr><td>使い方</td><td>extends（1つだけ）</td><td>implements（複数OK）</td></tr>
+        <tr><td>意味</td><td>共通の土台（is-a：〜である）</td><td>できることの約束（can-do：〜できる）</td></tr>
+      </tbody>
+    </table>
+    <div class="exercise-block" data-ex="interface"></div>
+    <div class="quiz-block" data-quiz="interface"></div>
+  </section>
+
+  <!-- 15 -->
+  <section id="enum">
+    <div class="sec-head"><h2>15. enum と record</h2></div>
+    <h3>enum（列挙型）：決まった選択肢を表す</h3>
+    <p>「曜日」「信号の色」「方向」のように、<strong>値が決まっている</strong>ものを型として表せます。タイプミスを防げて安全。</p>
+    <pre class="runnable"><code class="language-java">enum Signal { RED, YELLOW, GREEN }
+
+public class Main {
+    public static void main(String[] args) {
+        Signal s = Signal.RED;
+
+        String action = switch (s) {
+            case RED    -> "止まれ";
+            case YELLOW -> "注意";
+            case GREEN  -> "進め";
+        };
+        System.out.println(s + " → " + action);
+
+        for (Signal sig : Signal.values()) {  // 全要素を取得
+            System.out.println(sig);
+        }
+    }
+}</code></pre>
+    <h3>record：データを入れるだけのクラスを短く</h3>
+    <p>「名前と年齢を持つだけ」のようなデータ専用クラスは、<code>record</code> で1行で書けます（コンストラクタ・getter・toStringなどが自動生成）。</p>
+    <pre class="runnable"><code class="language-java">record Point(int x, int y) {}
+
+public class Main {
+    public static void main(String[] args) {
+        Point p = new Point(3, 4);
+        System.out.println(p);        // Point[x=3, y=4]（自動生成）
+        System.out.println(p.x());    // 3（getterも自動）
+        System.out.println(p.equals(new Point(3, 4))); // true（中身で比較）
+    }
+}</code></pre>
+    <div class="tip">💡 <code>record</code> はJava 16以降の機能。データの入れ物を作るときに非常に便利です。</div>
+    <div class="exercise-block" data-ex="enum"></div>
+    <div class="quiz-block" data-quiz="enum"></div>
+  </section>
+
+  <!-- 16 -->
+  <section id="generics">
+    <div class="sec-head"><h2>16. ジェネリクス</h2></div>
+    <p><strong>ジェネリクス</strong>は「型を後から指定できる」仕組み。<code>List&lt;String&gt;</code> の <code>&lt;String&gt;</code> がそれです。型を固定することで、安全（取り出すときにキャスト不要）になります。</p>
+    <pre class="runnable"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> names = new ArrayList<>();  // 文字列専用のリスト
+        names.add("佐藤");
+        // names.add(123);   // ← 型違いはコンパイルエラーで防げる
+
+        String first = names.get(0);  // キャスト不要で安全に取り出せる
+        System.out.println(first);
+    }
+}</code></pre>
+    <h3>自分でジェネリックなクラスを作る</h3>
+    <pre class="runnable"><code class="language-java">// T は「何かの型」を表すプレースホルダ
+class Box<T> {
+    private T value;
+    public void set(T value) { this.value = value; }
+    public T get() { return value; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Box<String> sBox = new Box<>();
+        sBox.set("こんにちは");
+        System.out.println(sBox.get());
+
+        Box<Integer> iBox = new Box<>();
+        iBox.set(100);
+        System.out.println(iBox.get() + 1); // 101
+    }
+}</code></pre>
+    <div class="tip">💡 <code>T</code> は慣習的な名前（Type）。<code>E</code>(Element)、<code>K</code>(Key)、<code>V</code>(Value) などもよく使われます。</div>
+    <div class="exercise-block" data-ex="generics"></div>
+    <div class="quiz-block" data-quiz="generics"></div>
+  </section>
+
+  <nav id="pagenav"></nav>
+  <footer>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="site-data.js?v=3"></script>
+<script src="quiz-data.js?v=3"></script>
+<script src="exercises.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>

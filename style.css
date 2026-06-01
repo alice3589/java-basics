@@ -391,8 +391,91 @@ footer strong { color: var(--text); }
 #toTop { margin-top: 18px; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 18px; cursor: pointer; font-size: 13px; }
 #toTop:hover { color: var(--accent); border-color: var(--accent); }
 
-/* 検索ハイライト */
-mark.search-hit { background: var(--accent); color: #1a1200; padding: 0 2px; border-radius: 3px; }
+/* 検索結果に部門ラベル */
+#searchResults a small { display: block; color: var(--text-dim); font-size: 11px; }
+#sidebar li a.navtop { font-weight: 700; color: var(--text); }
+#sidebar li a.navtop.curpage { color: var(--accent); }
+#sidebar li a.curpage { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+
+/* ===== 練習問題（コード判定） ===== */
+.exercise-block { margin: 26px 0; }
+.ex {
+  border: 2px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-radius: var(--radius); overflow: hidden; background: var(--card);
+}
+.ex.solved { border-color: var(--ok); }
+.ex-head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--card)); border-bottom: 1px solid var(--border);
+}
+.ex.solved .ex-head { background: color-mix(in srgb, var(--ok) 12%, var(--card)); }
+.ex-badge { font-size: 12px; font-weight: 800; color: var(--accent); background: var(--bg-soft); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; white-space: nowrap; }
+.ex-title { font-weight: 700; }
+.ex-solved { margin-left: auto; color: var(--ok); font-weight: 800; font-size: 13px; display: none; }
+.ex.solved .ex-solved { display: inline; }
+.ex-desc { padding: 14px 16px; font-size: 14.5px; line-height: 1.8; border-bottom: 1px solid var(--border); }
+.ex-desc code { font-size: 13px; }
+.ex-editor { border-bottom: 1px solid var(--border); }
+.ex-editor .CodeMirror { height: auto; }
+.ex-editor .CodeMirror-scroll { min-height: 120px; }
+.ex-toolbar { border-bottom: 1px solid var(--border); }
+.ex-toolbar .btn-judge { background: var(--ok); color: #fff; border-color: var(--ok); }
+.ex-toolbar .btn-judge:hover { filter: brightness(1.08); }
+.btn-load-sol { margin: 8px 0 4px; font-family: var(--sans); font-size: 12.5px; cursor: pointer; background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: 7px; padding: 5px 12px; }
+.btn-load-sol:hover { border-color: var(--accent); }
+
+.ex-result { display: none; padding: 14px 16px; }
+.ex-result.show { display: block; }
+.ex-result.pass { background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.ex-result.fail { background: color-mix(in srgb, var(--ng) 9%, transparent); }
+.ex-pass { color: var(--ok); font-weight: 800; font-size: 16px; }
+.ex-fail { color: var(--ng); font-weight: 800; margin-bottom: 8px; }
+.ex-out-label, .ex-io b { font-size: 12px; color: var(--text-dim); display: block; margin: 8px 0 3px; }
+.ex-out { margin: 0 0 6px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-soft); }
+.ex-out code { display: block; padding: 8px 12px; font-family: var(--mono); font-size: 13px; white-space: pre-wrap; color: var(--text); }
+.ex-out.err code, .ex-out.err { color: var(--ng); }
+.ex-io { margin-top: 4px; }
+.ex-solution { padding: 10px 16px 16px; }
+.ex-solution summary { cursor: pointer; color: var(--accent); font-size: 13.5px; font-weight: 700; user-select: none; }
+.ex-solution pre { margin-top: 10px; }
+
+/* ===== ホーム（部門カード） ===== */
+.home-hero { text-align: center; padding: 64px 24px 40px; }
+.home-hero h1 { font-size: 46px; margin-bottom: 12px; }
+.home-hero p { color: var(--text-dim); font-size: 18px; }
+.home-progress { max-width: 720px; margin: 26px auto 0; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; }
+.home-progress .hp-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+.home-progress .progress-track { height: 12px; }
+.home-progress .hp-stats { display: flex; gap: 22px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.home-progress .hp-stats div { text-align: center; }
+.home-progress .hp-stats b { display: block; font-size: 24px; color: var(--accent); }
+.home-progress .hp-stats span { font-size: 12px; color: var(--text-dim); }
+
+.part-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; max-width: 1000px; margin: 10px auto 0; padding: 0 24px; }
+.part-card { display: block; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; transition: transform .2s, border-color .2s, box-shadow .2s; color: var(--text); }
+.part-card:hover { transform: translateY(-4px); border-color: var(--accent); text-decoration: none; box-shadow: var(--shadow); }
+.part-card .pc-ico { font-size: 34px; }
+.part-card h3 { color: var(--accent); margin: 8px 0 4px; border: none; padding: 0; font-size: 20px; }
+.part-card .pc-count { font-size: 12px; color: var(--text-dim); }
+.part-card ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.part-card li { font-size: 13px; color: var(--text-dim); padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+.part-card li .ck { color: var(--ok); font-weight: 900; }
+.part-card li .ck.no { color: var(--border); }
+.home-howto { max-width: 1000px; margin: 40px auto 0; padding: 0 24px; }
+
+/* ===== 部門ページの見出し ===== */
+.part-head { max-width: 880px; margin: 0 auto; padding: 40px 40px 10px; }
+.part-head .ph-crumb { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.part-head .ph-crumb a { color: var(--text-dim); }
+.part-head h1 { font-size: 34px; }
+.part-head p { color: var(--text-dim); margin-top: 6px; }
+.ex-lead { background: var(--tip-bg); border-left: 4px solid var(--tip-border); border-radius: 10px; padding: 12px 16px; margin: 16px 0; font-size: 14px; }
+
+/* ===== 前後ページナビ ===== */
+#pagenav { display: flex; justify-content: space-between; gap: 12px; max-width: 880px; margin: 30px auto 0; padding: 0 40px; }
+.pn { flex: 1; max-width: 48%; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); font-weight: 700; transition: all .2s; }
+.pn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-2px); }
+.pn.next { text-align: right; }
 
 /* ===== レスポンシブ ===== */
 @media (max-width: 980px) {

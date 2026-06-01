@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Java基礎マスター 資料編：よく使う構文のチートシート、用語集、自由にコードを書けるプレイグラウンド。">
+<title>資料（チートシート・用語集・プレイグラウンド） | Java基礎マスター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<div id="readingBar"></div>
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="index.html">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
+  </div>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え">🌙</button>
+  </div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+
+<main id="top">
+  <div class="part-head">
+    <div class="ph-crumb"><a href="index.html">ホーム</a> ／ 資料</div>
+    <h1>📚 資料</h1>
+    <p>困ったときの早見表、用語の確認、そして自由にコードを試せる場所。</p>
+  </div>
+
+  <!-- プレイグラウンド -->
+  <section id="playground" data-noprogress>
+    <div class="sec-head"><h2>プレイグラウンド</h2></div>
+    <p>自由にコードを書いて実行できます。学んだことを試したり、思いついたコードを動かしてみましょう。</p>
+    <div id="playground"></div>
+  </section>
+
+  <!-- チートシート -->
+  <section id="cheatsheet" data-noprogress>
+    <div class="sec-head"><h2>チートシート</h2></div>
+    <p>よく使う構文のまとめ。困ったときの早見表に。</p>
+    <div class="cheat-grid">
+      <div class="cheat">
+        <h4>変数・型</h4>
+        <pre><code class="language-java">int n = 10;
+double d = 1.5;
+boolean b = true;
+String s = "文字";
+final int MAX = 100;</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>条件分岐</h4>
+        <pre><code class="language-java">if (x > 0) { ... }
+else if (x == 0) { ... }
+else { ... }
+
+String r = (x > 0) ? "正" : "負";</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>繰り返し</h4>
+        <pre><code class="language-java">for (int i = 0; i < n; i++) {}
+for (int x : arr) {}
+while (cond) {}</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>配列</h4>
+        <pre><code class="language-java">int[] a = {1, 2, 3};
+a[0] = 9;
+int len = a.length;
+int[] b = new int[5];</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>メソッド</h4>
+        <pre><code class="language-java">static int add(int a, int b) {
+    return a + b;
+}
+void run() { ... } // 戻り値なし</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>クラス</h4>
+        <pre><code class="language-java">class Dog {
+    String name;
+    Dog(String n) { name = n; }
+    void bark() { ... }
+}
+Dog d = new Dog("ポチ");</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>List / Map</h4>
+        <pre><code class="language-java">List<String> list = new ArrayList<>();
+list.add("a");
+Map<String,Integer> m = new HashMap<>();
+m.put("key", 1);</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>例外処理</h4>
+        <pre><code class="language-java">try {
+    risky();
+} catch (Exception e) {
+    System.out.println(e.getMessage());
+}</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>文字列</h4>
+        <pre><code class="language-java">s.length();
+s.substring(2);
+s.equals(t);   // 比較は equals!
+s.split(",");</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 用語集 -->
+  <section id="glossary" data-noprogress>
+    <div class="sec-head"><h2>用語集</h2></div>
+    <p>つまずきやすい用語を、ひとことで。</p>
+    <dl class="glossary">
+      <dt>変数</dt><dd>データを入れておく名前付きの箱。</dd>
+      <dt>型（データ型）</dt><dd>データの種類。int（整数）、String（文字列）など。</dd>
+      <dt>メソッド</dt><dd>名前をつけてまとめた処理。関数のこと。</dd>
+      <dt>引数（ひきすう）</dt><dd>メソッドに渡す入力データ。</dd>
+      <dt>戻り値（もどりち）</dt><dd>メソッドが返す結果。<code>return</code> で返す。</dd>
+      <dt>クラス</dt><dd>オブジェクトの設計図。データと処理をまとめたもの。</dd>
+      <dt>オブジェクト / インスタンス</dt><dd>クラスから <code>new</code> で作った実物。</dd>
+      <dt>フィールド</dt><dd>クラスが持つデータ（変数）。属性。</dd>
+      <dt>コンストラクタ</dt><dd><code>new</code> 時に呼ばれる初期化用の特別なメソッド。</dd>
+      <dt>this</dt><dd>「自分自身のオブジェクト」を指すキーワード。</dd>
+      <dt>継承</dt><dd>既存クラスの機能を引き継いで新クラスを作ること（extends）。</dd>
+      <dt>オーバーライド</dt><dd>親クラスのメソッドを子クラスで上書きすること。</dd>
+      <dt>オーバーロード</dt><dd>同じ名前で引数違いのメソッドを複数定義すること。</dd>
+      <dt>インターフェース</dt><dd>「できること」だけを定めた約束（implements）。</dd>
+      <dt>カプセル化</dt><dd>データを隠してメソッド経由で操作させ、安全にする考え方。</dd>
+      <dt>ポリモーフィズム</dt><dd>同じ呼び出しが対象の型で違う動きをすること（多態性）。</dd>
+      <dt>例外</dt><dd>実行中に起きるエラー。try-catchで対処する。</dd>
+      <dt>コレクション</dt><dd>List・Map・Setなど、データをまとめて扱う道具。</dd>
+      <dt>ジェネリクス</dt><dd>型を後から指定できる仕組み。<code>List&lt;String&gt;</code> など。</dd>
+      <dt>コンパイル</dt><dd>ソースコードを機械が実行できる形式に変換すること。</dd>
+      <dt>JVM</dt><dd>Java仮想マシン。バイトコードを実行する土台。</dd>
+      <dt>API</dt><dd>あらかじめ用意された機能の呼び出し口（標準ライブラリなど）。</dd>
+    </dl>
+  </section>
+
+  <nav id="pagenav"></nav>
+  <footer>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="site-data.js?v=3"></script>
+<script src="quiz-data.js?v=3"></script>
+<script src="exercises.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>

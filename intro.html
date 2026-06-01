@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Java基礎マスター 入門編：Javaとは・環境構築、Hello World、変数とデータ型、演算子、標準入出力。各章に実行できるコード例と自動判定の練習問題つき。">
+<title>入門 | Java基礎マスター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<div id="readingBar"></div>
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="index.html">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
+  </div>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え">🌙</button>
+  </div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+
+<main id="top">
+  <div class="part-head">
+    <div class="ph-crumb"><a href="index.html">ホーム</a> ／ 入門</div>
+    <h1>🌱 入門</h1>
+    <p>Javaの全体像と、プログラムの基本パーツを身につけよう。各章の最後に、実際にコードを書いて答え合わせできる練習問題があります。</p>
+  </div>
+
+  <!-- 1 -->
+  <section id="intro">
+    <div class="sec-head"><h2>1. Javaとは / 環境構築</h2></div>
+    <p><strong>Java</strong> は世界中で広く使われているプログラミング言語です。Androidアプリ、銀行や企業の業務システム、大規模Webサービスなど活躍の場が非常に広く、一度学べば長く役立ちます。</p>
+    <h3>Javaの3つの特徴</h3>
+    <div class="cards">
+      <div class="card"><span class="card-ico">🧩</span><strong>オブジェクト指向</strong><p>プログラムを「モノ（オブジェクト）」の集まりとして組み立てる。大きなソフトでも整理しやすい。</p></div>
+      <div class="card"><span class="card-ico">🌍</span><strong>どこでも動く</strong><p>「一度書けば、どこでも動く」。WindowsでもMacでもLinuxでも同じコードが動く。</p></div>
+      <div class="card"><span class="card-ico">🛡️</span><strong>静的型付け</strong><p>変数の型を先に決めるので、間違いをコンパイル時に発見できる。安全で堅牢。</p></div>
+    </div>
+    <h3>仕組み：コンパイルと実行</h3>
+    <p>Javaのソースコード（<code>.java</code>）は <strong>コンパイル</strong> されて中間形式（<code>.class</code>＝バイトコード）になり、それを <strong>JVM（Java仮想マシン）</strong> が実行します。この「JVMが間に入る」仕組みのおかげで、どのOSでも動きます。</p>
+    <div class="diagram flow">
+      <div class="node"><b>Hello.java</b><small>ソースコード<br>（人が書く）</small></div>
+      <div class="arrow"><span>javac</span>→</div>
+      <div class="node"><b>Hello.class</b><small>バイトコード<br>（中間形式）</small></div>
+      <div class="arrow"><span>java</span>→</div>
+      <div class="node accent"><b>実行結果</b><small>JVMが実行</small></div>
+    </div>
+    <h3>環境構築（JDKのインストール）</h3>
+    <p>自分のPCでJavaを動かすには <strong>JDK（Java Development Kit）</strong> が必要です。無料の <strong>Temurin（Adoptium）</strong> がおすすめ。インストール後、ターミナルで確認します。</p>
+    <pre><code class="language-bash">java -version
+javac -version</code></pre>
+    <div class="tip">💡 バージョン番号が出ればOK。エディタは <strong>VS Code</strong>（拡張「Extension Pack for Java」）か <strong>IntelliJ IDEA</strong> が定番。<br>このサイトでは <b>インストールしなくても</b>、各コード例の「▶ 実行」ボタンでそのまま動かせます。まずは触ってみましょう！</div>
+    <div class="quiz-block" data-quiz="intro"></div>
+  </section>
+
+  <!-- 2 -->
+  <section id="hello">
+    <div class="sec-head"><h2>2. 最初のプログラム（Hello World）</h2></div>
+    <p>まずは画面に文字を表示する定番から。下のコードの <strong>「▶ 実行」</strong> を押してみてください。結果がすぐ下に表示されます。<strong>コードを書き換えて</strong>再実行もできます（「✎ 編集」）。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+        System.out.println("はじめてのJava！");
+    }
+}</code></pre>
+    <h3>コードの意味</h3>
+    <ul>
+      <li><code>public class Main</code> … <strong>クラス</strong>の定義。プログラムの入れ物</li>
+      <li><code>public static void main(String[] args)</code> … プログラムの<strong>入口（mainメソッド）</strong>。実行するとここから始まる</li>
+      <li><code>System.out.println(...)</code> … 画面に1行表示。<code>println</code>は改行あり、<code>print</code>は改行なし</li>
+      <li>文の終わりには必ず <strong>セミコロン <code>;</code></strong></li>
+    </ul>
+    <div class="ex-lead">📖 説明を読んだら、さっそく挑戦！ 下のエディタにコードを書いて「✓ 判定する」を押すと自動で正誤判定します。</div>
+    <div class="exercise-block" data-ex="hello"></div>
+    <div class="quiz-block" data-quiz="hello"></div>
+  </section>
+
+  <!-- 3 -->
+  <section id="variables">
+    <div class="sec-head"><h2>3. 変数とデータ型</h2></div>
+    <p><strong>変数</strong>はデータを入れておく「箱」。Javaでは箱を作るときに<strong>型（データの種類）</strong>を指定します。</p>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int age = 20;             // 整数
+double height = 170.5;    // 小数
+char grade = 'A';         // 1文字（シングルクォート）
+boolean isStudent = true; // 真偽値（true / false）
+String name = "佐藤";      // 文字列（ダブルクォート）
+
+System.out.println(name + "さん / " + age + "歳 / 評価" + grade);</code></pre>
+    <h3>基本データ型（プリミティブ型）</h3>
+    <table>
+      <thead><tr><th>型</th><th>用途</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td><code>int</code></td><td>整数</td><td>100, -5</td></tr>
+        <tr><td><code>long</code></td><td>大きな整数</td><td>10000000000L</td></tr>
+        <tr><td><code>double</code></td><td>小数</td><td>3.14, -0.5</td></tr>
+        <tr><td><code>char</code></td><td>1文字</td><td>'A', 'あ'</td></tr>
+        <tr><td><code>boolean</code></td><td>真偽値</td><td>true, false</td></tr>
+      </tbody>
+    </table>
+    <p><code>String</code>（文字列）はプリミティブ型ではなく<strong>クラス</strong>ですが、基本としてよく使います。</p>
+    <h3>定数とキャスト（型変換）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">final double PI = 3.14159;  // final = 変更できない定数
+// PI = 3.0;  // ← これはエラー
+
+int i = 10;
+double d = i;       // int → double は自動変換（10.0）
+double pi = 3.99;
+int n = (int) pi;   // double → int は明示キャスト（小数切り捨て → 3）
+
+System.out.println(d + " / " + n + " / " + PI);</code></pre>
+    <div class="tip">💡 変数名は意味の分かる英単語で。Javaの慣習は <code>userName</code> のような「キャメルケース」。定数は <code>MAX_SIZE</code> のように大文字＋アンダースコア。</div>
+    <div class="exercise-block" data-ex="variables"></div>
+    <div class="quiz-block" data-quiz="variables"></div>
+  </section>
+
+  <!-- 4 -->
+  <section id="operators">
+    <div class="sec-head"><h2>4. 演算子</h2></div>
+    <h3>算術演算子</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int a = 7, b = 3;
+System.out.println(a + b); // 10  足し算
+System.out.println(a - b); // 4   引き算
+System.out.println(a * b); // 21  掛け算
+System.out.println(a / b); // 2   割り算（整数同士は切り捨て！）
+System.out.println(a % b); // 1   余り（あまり）
+System.out.println(7.0 / 3); // 2.333... 片方が小数なら小数で計算</code></pre>
+    <h3>代入・インクリメント</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int n = 10;
+n += 5;  System.out.println(n); // 15
+n -= 3;  System.out.println(n); // 12
+n *= 2;  System.out.println(n); // 24
+n++;     System.out.println(n); // 25（1増やす）
+n--;     System.out.println(n); // 24（1減らす）</code></pre>
+    <h3>比較・論理演算子（結果は boolean）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int x = 5;
+System.out.println(x == 5);  // true   等しい
+System.out.println(x != 3);  // true   等しくない
+System.out.println(x > 3);   // true   より大きい
+System.out.println(x <= 5);  // true   以下
+
+boolean p = true, q = false;
+System.out.println(p && q);  // false  かつ（AND）
+System.out.println(p || q);  // true   または（OR）
+System.out.println(!p);      // false  否定（NOT）</code></pre>
+    <div class="warn">⚠️ 整数同士の割り算は要注意！ <code>5 / 2</code> は <code>2</code>（小数は切り捨て）。<code>2.5</code> がほしいなら <code>5.0 / 2</code> とします。上のコードで確かめてみよう。</div>
+    <div class="exercise-block" data-ex="operators"></div>
+    <div class="quiz-block" data-quiz="operators"></div>
+  </section>
+
+  <!-- 5 -->
+  <section id="io">
+    <div class="sec-head"><h2>5. 標準入出力</h2></div>
+    <h3>出力</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">System.out.println("改行あり");
+System.out.print("改行");
+System.out.print("なし\n");                  // \n で改行
+System.out.printf("%sは%d歳%n", "佐藤", 20);  // 書式つき出力</code></pre>
+    <h3>キーボードから入力（Scanner）</h3>
+    <p>このコードは<strong>入力</strong>を必要とします。実行パネルの「標準入力」欄にあらかじめ値が入っています（自由に変えてOK）。</p>
+    <pre class="runnable" data-stdin="佐藤
+20"><code class="language-java">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("名前を入力: ");
+        String name = sc.nextLine();   // 1行（文字列）を読む
+
+        System.out.print("年齢を入力: ");
+        int age = sc.nextInt();        // 整数を読む
+
+        System.out.println(name + "さんは" + age + "歳です");
+        sc.close();
+    }
+}</code></pre>
+    <ul>
+      <li><code>nextLine()</code> … 1行（文字列）を読む / <code>nextInt()</code> … 整数 / <code>nextDouble()</code> … 小数</li>
+      <li>文字列の連結は <code>+</code></li>
+    </ul>
+    <div class="tip">💡 <code>import java.util.Scanner;</code> は「Scannerという道具を使う」宣言。ファイルの先頭に書きます。</div>
+    <div class="ex-lead">📖 練習問題では<strong>プロンプト文字（「名前を入力:」など）は出力しない</strong>でください。読み取って結果だけを出力します。</div>
+    <div class="exercise-block" data-ex="io"></div>
+    <div class="quiz-block" data-quiz="io"></div>
+  </section>
+
+  <nav id="pagenav"></nav>
+  <footer>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="site-data.js?v=3"></script>
+<script src="quiz-data.js?v=3"></script>
+<script src="exercises.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
