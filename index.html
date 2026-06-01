@@ -1,26 +1,48 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Javaの基礎をゼロからマスターするための学習サイト。環境構築から変数・制御構文・クラス・例外処理・コレクションまで、コード例つきで体系的に学べます。">
-<title>Java基礎マスター | ゼロから学ぶJavaプログラミング</title>
+<meta name="description" content="Javaの基礎をゼロからマスターする学習サイト。ブラウザ上でコードを実行でき、理解度クイズ・進捗管理・プレイグラウンドつき。環境構築からオブジェクト指向、ジェネリクス、例外処理、コレクション、Streamまで体系的に学べます。">
+<meta property="og:title" content="Java基礎マスター | ブラウザで動かして学ぶJava">
+<meta property="og:description" content="コードをその場で実行しながら学べる、Java基礎の学習サイト。全25章＋クイズ＋プレイグラウンド。">
+<meta property="og:type" content="website">
+<title>Java基礎マスター | ブラウザで動かして学ぶJava</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="preconnect" href="https://wandbox.org">
+<link id="prismLight" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled>
+<link id="prismDark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button id="navToggle" aria-label="メニューを開く">☰ 目次</button>
 
-<nav id="sidebar">
-  <div class="brand">
-    <span class="logo">☕</span>
-    <div>
-      <strong>Java基礎マスター</strong>
-      <small>ゼロから学ぶJava</small>
-    </div>
+<!-- 読み取り進捗バー -->
+<div id="readingBar"></div>
+
+<!-- トップバー -->
+<header id="topbar">
+  <button id="navToggle" aria-label="目次を開閉">☰</button>
+  <a class="topbrand" href="#top">☕ Java基礎マスター</a>
+  <div class="search-wrap">
+    <input id="searchInput" type="search" placeholder="🔍 章を検索（例: 配列, 例外, ラムダ）" autocomplete="off">
+    <div id="searchResults"></div>
   </div>
-  <ul>
+  <div class="top-actions">
+    <span id="progressPill" title="学習の進捗">0%</span>
+    <button id="themeToggle" aria-label="テーマ切り替え" title="ライト/ダーク切り替え">🌙</button>
+  </div>
+</header>
+
+<!-- サイドバー -->
+<nav id="sidebar">
+  <div class="progress-box">
+    <div class="progress-label"><span>学習の進捗</span><span id="progressText">0 / 0</span></div>
+    <div class="progress-track"><div id="progressFill"></div></div>
+    <button id="resetProgress" title="進捗をリセット">リセット</button>
+  </div>
+  <ul id="navList">
     <li class="nav-group">入門</li>
     <li><a href="#intro">1. Javaとは / 環境構築</a></li>
     <li><a href="#hello">2. 最初のプログラム</a></li>
@@ -38,78 +60,105 @@
     <li><a href="#inheritance">12. 継承</a></li>
     <li><a href="#polymorphism">13. ポリモーフィズム</a></li>
     <li><a href="#interface">14. インターフェース</a></li>
+    <li><a href="#enum">15. enum と record</a></li>
+    <li><a href="#generics">16. ジェネリクス</a></li>
     <li class="nav-group">実践</li>
-    <li><a href="#exception">15. 例外処理</a></li>
-    <li><a href="#collection">16. コレクション</a></li>
-    <li><a href="#string">17. 文字列操作</a></li>
-    <li><a href="#modern">18. ラムダ式とStream</a></li>
-    <li><a href="#exercise">19. 練習問題</a></li>
-    <li><a href="#next">20. 次のステップ</a></li>
+    <li><a href="#exception">17. 例外処理</a></li>
+    <li><a href="#collection">18. コレクション</a></li>
+    <li><a href="#string">19. 文字列操作</a></li>
+    <li><a href="#fileio">20. ファイル入出力</a></li>
+    <li><a href="#modern">21. ラムダ式とStream</a></li>
+    <li class="nav-group">仕上げ</li>
+    <li><a href="#exercise">22. 練習問題</a></li>
+    <li><a href="#playground">23. プレイグラウンド</a></li>
+    <li><a href="#cheatsheet">24. チートシート</a></li>
+    <li><a href="#glossary">25. 用語集</a></li>
   </ul>
 </nav>
 
-<main>
-  <header class="hero">
+<div id="overlay"></div>
+
+<main id="top">
+  <section class="hero" data-noprogress>
     <h1>☕ Java基礎マスター</h1>
-    <p>環境構築からオブジェクト指向、例外処理、コレクションまで。<br>コード例を写経しながら、Javaの基礎を体系的に身につけよう。</p>
+    <p class="lead">読むだけじゃ身につかない。<br><strong>ブラウザの中でコードを書いて、実行して</strong>学ぼう。</p>
     <div class="hero-meta">
-      <span>🎯 全20章</span>
-      <span>💻 コピペで動くコード例</span>
-      <span>✏️ 練習問題つき</span>
+      <span>🟢 その場で実行できる</span>
+      <span>❓ 理解度クイズ</span>
+      <span>📊 進捗が残る</span>
+      <span>🎮 プレイグラウンド</span>
     </div>
-  </header>
+    <div class="hero-cta">
+      <a class="btn-primary" href="#intro">学習を始める →</a>
+      <a class="btn-ghost" href="#playground">自由に書いて試す</a>
+    </div>
+    <p class="hero-note">※ コード実行は無料の <a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a>（JDK&nbsp;22）を利用。ネット接続が必要です。</p>
+  </section>
 
   <!-- 1 -->
   <section id="intro">
-    <h2>1. Javaとは / 環境構築</h2>
-    <p><strong>Java</strong> は世界中で広く使われているプログラミング言語です。Androidアプリ、業務システム、Webサーバーなど活躍の場が非常に広く、一度学ぶと長く役立ちます。</p>
-    <h3>Javaの特徴</h3>
-    <ul>
-      <li><strong>オブジェクト指向</strong> … プログラムを「モノ（オブジェクト）」の集まりとして組み立てる</li>
-      <li><strong>プラットフォーム非依存</strong> … 「一度書けば、どこでも動く（Write Once, Run Anywhere）」</li>
-      <li><strong>静的型付け</strong> … 変数の型をあらかじめ決めるので、間違いに気づきやすい</li>
-    </ul>
-    <h3>仕組み（コンパイルと実行）</h3>
-    <p>Javaのソースコード（<code>.java</code>）は <strong>コンパイル</strong> されて中間形式（<code>.class</code> = バイトコード）になり、それを <strong>JVM（Java仮想マシン）</strong> が実行します。</p>
-    <pre><code class="language-text">Hello.java  --[コンパイル javac]-->  Hello.class  --[実行 java]-->  結果</code></pre>
+    <div class="sec-head"><h2>1. Javaとは / 環境構築</h2></div>
+    <p><strong>Java</strong> は世界中で広く使われているプログラミング言語です。Androidアプリ、銀行や企業の業務システム、大規模Webサービスなど活躍の場が非常に広く、一度学べば長く役立ちます。</p>
+    <h3>Javaの3つの特徴</h3>
+    <div class="cards">
+      <div class="card"><span class="card-ico">🧩</span><strong>オブジェクト指向</strong><p>プログラムを「モノ（オブジェクト）」の集まりとして組み立てる。大きなソフトでも整理しやすい。</p></div>
+      <div class="card"><span class="card-ico">🌍</span><strong>どこでも動く</strong><p>「一度書けば、どこでも動く」。WindowsでもMacでもLinuxでも同じコードが動く。</p></div>
+      <div class="card"><span class="card-ico">🛡️</span><strong>静的型付け</strong><p>変数の型を先に決めるので、間違いをコンパイル時に発見できる。安全で堅牢。</p></div>
+    </div>
+
+    <h3>仕組み：コンパイルと実行</h3>
+    <p>Javaのソースコード（<code>.java</code>）は <strong>コンパイル</strong> されて中間形式（<code>.class</code>＝バイトコード）になり、それを <strong>JVM（Java仮想マシン）</strong> が実行します。この「JVMが間に入る」仕組みのおかげで、どのOSでも動きます。</p>
+    <div class="diagram flow">
+      <div class="node"><b>Hello.java</b><small>ソースコード<br>（人が書く）</small></div>
+      <div class="arrow"><span>javac</span>→</div>
+      <div class="node"><b>Hello.class</b><small>バイトコード<br>（中間形式）</small></div>
+      <div class="arrow"><span>java</span>→</div>
+      <div class="node accent"><b>実行結果</b><small>JVMが実行</small></div>
+    </div>
+
     <h3>環境構築（JDKのインストール）</h3>
-    <p>JavaのプログラムをつくるにはJDK（Java Development Kit）が必要です。無料の <strong>Temurin（Adoptium）</strong> や <strong>Oracle JDK</strong> をインストールしましょう。インストール後、ターミナル（コマンドプロンプト / PowerShell）で次を実行して確認します。</p>
+    <p>自分のPCでJavaを動かすには <strong>JDK（Java Development Kit）</strong> が必要です。無料の <strong>Temurin（Adoptium）</strong> がおすすめ。インストール後、ターミナルで確認します。</p>
     <pre><code class="language-bash">java -version
 javac -version</code></pre>
-    <div class="tip">💡 バージョン番号が表示されればインストール成功です。エディタは <strong>VS Code</strong>（拡張機能「Extension Pack for Java」）や <strong>IntelliJ IDEA</strong> がおすすめ。</div>
+    <div class="tip">💡 バージョン番号が出ればOK。エディタは <strong>VS Code</strong>（拡張「Extension Pack for Java」）か <strong>IntelliJ IDEA</strong> が定番。<br>このサイトでは <b>インストールしなくても</b>、各コード例の「▶ 実行」ボタンでそのまま動かせます。まずは触ってみましょう！</div>
+
+    <div class="quiz-block" data-quiz="intro"></div>
   </section>
 
   <!-- 2 -->
   <section id="hello">
-    <h2>2. 最初のプログラム（Hello World）</h2>
-    <p>まずは画面に文字を表示する定番プログラムから。<code>Hello.java</code> という名前で保存します。</p>
-    <pre><code class="language-java">public class Hello {
+    <div class="sec-head"><h2>2. 最初のプログラム（Hello World）</h2></div>
+    <p>まずは画面に文字を表示する定番から。下のコードの <strong>「▶ 実行」</strong> を押してみてください。結果がすぐ下に表示されます。<strong>コードを書き換えて</strong>再実行もできます（「✎ 編集」）。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
+        System.out.println("はじめてのJava！");
     }
 }</code></pre>
-    <h3>実行方法</h3>
-    <pre><code class="language-bash">javac Hello.java   # コンパイル → Hello.class が生成される
-java Hello         # 実行 → Hello, World! と表示</code></pre>
+
     <h3>コードの意味</h3>
     <ul>
-      <li><code>public class Hello</code> … <strong>クラス</strong>の定義。ファイル名（Hello.java）とクラス名（Hello）は一致させる</li>
+      <li><code>public class Main</code> … <strong>クラス</strong>の定義。プログラムの入れ物</li>
       <li><code>public static void main(String[] args)</code> … プログラムの<strong>入口（mainメソッド）</strong>。実行するとここから始まる</li>
-      <li><code>System.out.println(...)</code> … 画面に1行表示する命令。<code>println</code>は改行あり、<code>print</code>は改行なし</li>
-      <li>文の終わりには必ず <strong>セミコロン <code>;</code></strong> をつける</li>
+      <li><code>System.out.println(...)</code> … 画面に1行表示。<code>println</code>は改行あり、<code>print</code>は改行なし</li>
+      <li>文の終わりには必ず <strong>セミコロン <code>;</code></strong></li>
     </ul>
-    <div class="tip">💡 ブロックは <code>{ }</code> で囲みます。インデント（字下げ）を揃えると読みやすくなります。</div>
+    <div class="tip">💡 自分のPCで動かす場合はファイル名とクラス名を一致させます（<code>public class Hello</code> なら <code>Hello.java</code>）。コンパイルは <code>javac Hello.java</code>、実行は <code>java Hello</code>。</div>
+
+    <div class="quiz-block" data-quiz="hello"></div>
   </section>
 
   <!-- 3 -->
   <section id="variables">
-    <h2>3. 変数とデータ型</h2>
-    <p><strong>変数</strong>はデータを入れておく「箱」です。Javaでは箱を作るときに<strong>型（データの種類）</strong>を指定します。</p>
-    <pre><code class="language-java">int age = 20;            // 整数
-double height = 170.5;   // 小数
-char grade = 'A';        // 1文字（シングルクォート）
-boolean isStudent = true;// 真偽値（true / false）
-String name = "佐藤";     // 文字列（ダブルクォート）</code></pre>
+    <div class="sec-head"><h2>3. 変数とデータ型</h2></div>
+    <p><strong>変数</strong>はデータを入れておく「箱」。Javaでは箱を作るときに<strong>型（データの種類）</strong>を指定します。</p>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int age = 20;             // 整数
+double height = 170.5;    // 小数
+char grade = 'A';         // 1文字（シングルクォート）
+boolean isStudent = true; // 真偽値（true / false）
+String name = "佐藤";      // 文字列（ダブルクォート）
+
+System.out.println(name + "さん / " + age + "歳 / 評価" + grade);</code></pre>
 
     <h3>基本データ型（プリミティブ型）</h3>
     <table>
@@ -124,97 +173,99 @@ String name = "佐藤";     // 文字列（ダブルクォート）</code></pre>
     </table>
     <p><code>String</code>（文字列）はプリミティブ型ではなく<strong>クラス</strong>ですが、基本としてよく使います。</p>
 
-    <h3>変数のルール</h3>
-    <pre><code class="language-java">int score;        // 宣言だけ
-score = 80;        // 後から代入
-int x = 1, y = 2;  // まとめて宣言
+    <h3>定数とキャスト（型変換）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">final double PI = 3.14159;  // final = 変更できない定数
+// PI = 3.0;  // ← これはエラー
 
-final double PI = 3.14159;  // final = 変更できない定数
-// PI = 3.0;  // ← これはエラーになる</code></pre>
-
-    <h3>型変換（キャスト）</h3>
-    <pre><code class="language-java">int i = 10;
-double d = i;          // int → double は自動変換
+int i = 10;
+double d = i;       // int → double は自動変換（10.0）
 double pi = 3.99;
-int n = (int) pi;      // double → int は明示的にキャスト（小数点以下切り捨て → 3）</code></pre>
-    <div class="tip">💡 変数名は意味が分かる英単語で。Javaの慣習では <code>userName</code> のように「キャメルケース」を使います。</div>
+int n = (int) pi;   // double → int は明示キャスト（小数切り捨て → 3）
+
+System.out.println(d + " / " + n + " / " + PI);</code></pre>
+    <div class="tip">💡 変数名は意味の分かる英単語で。Javaの慣習は <code>userName</code> のような「キャメルケース」。定数は <code>MAX_SIZE</code> のように大文字＋アンダースコア。</div>
+
+    <div class="quiz-block" data-quiz="variables"></div>
   </section>
 
   <!-- 4 -->
   <section id="operators">
-    <h2>4. 演算子</h2>
+    <div class="sec-head"><h2>4. 演算子</h2></div>
     <h3>算術演算子</h3>
-    <pre><code class="language-java">int a = 7, b = 3;
+    <pre class="runnable" data-wrap="main"><code class="language-java">int a = 7, b = 3;
 System.out.println(a + b); // 10  足し算
 System.out.println(a - b); // 4   引き算
 System.out.println(a * b); // 21  掛け算
-System.out.println(a / b); // 2   割り算（整数同士は小数切り捨て！）
+System.out.println(a / b); // 2   割り算（整数同士は切り捨て！）
 System.out.println(a % b); // 1   余り（あまり）
-
 System.out.println(7.0 / 3); // 2.333... 片方が小数なら小数で計算</code></pre>
 
-    <h3>代入演算子</h3>
-    <pre><code class="language-java">int n = 10;
-n += 5;  // n = n + 5 → 15
-n -= 3;  // 12
-n *= 2;  // 24
-n++;     // 25（1増やす）
-n--;     // 24（1減らす）</code></pre>
+    <h3>代入・インクリメント</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int n = 10;
+n += 5;  System.out.println(n); // 15
+n -= 3;  System.out.println(n); // 12
+n *= 2;  System.out.println(n); // 24
+n++;     System.out.println(n); // 25（1増やす）
+n--;     System.out.println(n); // 24（1減らす）</code></pre>
 
-    <h3>比較演算子（結果は boolean）</h3>
-    <pre><code class="language-java">int x = 5;
+    <h3>比較・論理演算子（結果は boolean）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int x = 5;
 System.out.println(x == 5);  // true   等しい
 System.out.println(x != 3);  // true   等しくない
 System.out.println(x > 3);   // true   より大きい
-System.out.println(x <= 5);  // true   以下</code></pre>
+System.out.println(x <= 5);  // true   以下
 
-    <h3>論理演算子</h3>
-    <pre><code class="language-java">boolean a = true, b = false;
-System.out.println(a && b);  // false  かつ（AND）
-System.out.println(a || b);  // true   または（OR）
-System.out.println(!a);      // false  否定（NOT）</code></pre>
-    <div class="warn">⚠️ 整数同士の割り算は要注意！ <code>5 / 2</code> は <code>2</code> になります（小数は切り捨て）。<code>2.5</code> がほしいなら <code>5.0 / 2</code> とします。</div>
+boolean p = true, q = false;
+System.out.println(p && q);  // false  かつ（AND）
+System.out.println(p || q);  // true   または（OR）
+System.out.println(!p);      // false  否定（NOT）</code></pre>
+    <div class="warn">⚠️ 整数同士の割り算は要注意！ <code>5 / 2</code> は <code>2</code>（小数は切り捨て）。<code>2.5</code> がほしいなら <code>5.0 / 2</code> とします。上のコードで確かめてみよう。</div>
+
+    <div class="quiz-block" data-quiz="operators"></div>
   </section>
 
   <!-- 5 -->
   <section id="io">
-    <h2>5. 標準入出力</h2>
+    <div class="sec-head"><h2>5. 標準入出力</h2></div>
     <h3>出力</h3>
-    <pre><code class="language-java">System.out.println("改行あり");
+    <pre class="runnable" data-wrap="main"><code class="language-java">System.out.println("改行あり");
 System.out.print("改行");
-System.out.print("なし\n");          // \n で改行
-System.out.printf("%sは%d歳%n", "佐藤", 20); // 書式つき出力</code></pre>
+System.out.print("なし\n");                  // \n で改行
+System.out.printf("%sは%d歳%n", "佐藤", 20);  // 書式つき出力</code></pre>
 
     <h3>キーボードから入力（Scanner）</h3>
-    <pre><code class="language-java">import java.util.Scanner;
+    <p>このコードは<strong>入力</strong>を必要とします。実行パネルの「標準入力」欄にあらかじめ値が入っています（自由に変えてOK）。</p>
+    <pre class="runnable" data-stdin="佐藤
+20"><code class="language-java">import java.util.Scanner;
 
-public class InputExample {
+public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("名前を入力: ");
-        String name = sc.nextLine();   // 1行（文字列）読み取り
+        String name = sc.nextLine();   // 1行（文字列）を読む
 
         System.out.print("年齢を入力: ");
-        int age = sc.nextInt();        // 整数を読み取り
+        int age = sc.nextInt();        // 整数を読む
 
         System.out.println(name + "さんは" + age + "歳です");
         sc.close();
     }
 }</code></pre>
     <ul>
-      <li><code>nextLine()</code> … 1行（文字列）を読む</li>
-      <li><code>nextInt()</code> … 整数を読む / <code>nextDouble()</code> … 小数を読む</li>
-      <li>文字列の連結は <code>+</code> でできる</li>
+      <li><code>nextLine()</code> … 1行（文字列）を読む / <code>nextInt()</code> … 整数 / <code>nextDouble()</code> … 小数</li>
+      <li>文字列の連結は <code>+</code></li>
     </ul>
-    <div class="tip">💡 <code>import java.util.Scanner;</code> はファイルの先頭に書きます。「Scannerという道具を使います」という宣言です。</div>
+    <div class="tip">💡 <code>import java.util.Scanner;</code> は「Scannerという道具を使う」宣言。ファイルの先頭に書きます。</div>
+
+    <div class="quiz-block" data-quiz="io"></div>
   </section>
 
   <!-- 6 -->
   <section id="if">
-    <h2>6. 条件分岐 (if / switch)</h2>
+    <div class="sec-head"><h2>6. 条件分岐 (if / switch)</h2></div>
     <h3>if 文</h3>
-    <pre><code class="language-java">int score = 75;
+    <pre class="runnable" data-wrap="main"><code class="language-java">int score = 75;
 
 if (score >= 80) {
     System.out.println("優");
@@ -225,85 +276,75 @@ if (score >= 80) {
 }</code></pre>
 
     <h3>三項演算子（短い条件分岐）</h3>
-    <pre><code class="language-java">int n = 4;
+    <pre class="runnable" data-wrap="main"><code class="language-java">int n = 4;
 String result = (n % 2 == 0) ? "偶数" : "奇数";
 System.out.println(result); // 偶数</code></pre>
 
-    <h3>switch 文</h3>
-    <pre><code class="language-java">int day = 3;
-switch (day) {
-    case 1: System.out.println("月曜"); break;
-    case 2: System.out.println("火曜"); break;
-    case 3: System.out.println("水曜"); break;
-    default: System.out.println("その他"); break;
-}
+    <h3>switch 文・switch式</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int day = 3;
 
-// 新しい書き方（switch式）
+// 新しい書き方（switch式）：すっきり書ける
 String name = switch (day) {
     case 1 -> "月曜";
     case 2 -> "火曜";
     case 3 -> "水曜";
     default -> "その他";
-};</code></pre>
-    <div class="warn">⚠️ 従来の switch では <code>break;</code> を忘れると次のcaseまで実行されてしまいます（フォールスルー）。</div>
+};
+System.out.println(name); // 水曜</code></pre>
+    <div class="warn">⚠️ 従来の <code>switch(){ case ...: break; }</code> では <code>break;</code> を忘れると次のcaseまで実行されます（フォールスルー）。新しい <code>-&gt;</code> 形式ならその心配はありません。</div>
+
+    <div class="quiz-block" data-quiz="if"></div>
   </section>
 
   <!-- 7 -->
   <section id="loop">
-    <h2>7. 繰り返し (for / while)</h2>
+    <div class="sec-head"><h2>7. 繰り返し (for / while)</h2></div>
     <h3>for 文</h3>
-    <pre><code class="language-java">// 1から5まで表示
+    <pre class="runnable" data-wrap="main"><code class="language-java">// 1から5まで表示
 for (int i = 1; i <= 5; i++) {
     System.out.println(i);
 }</code></pre>
     <p>構造： <code>for (初期化; 続ける条件; 更新)</code></p>
 
-    <h3>while 文</h3>
-    <pre><code class="language-java">int i = 1;
-while (i <= 5) {
-    System.out.println(i);
-    i++;  // ← これを忘れると無限ループ！
-}</code></pre>
+    <h3>while / do-while</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int i = 1;
+while (i <= 3) {
+    System.out.println("while: " + i);
+    i++;  // ← 忘れると無限ループ！
+}
 
-    <h3>do-while 文（最低1回は実行）</h3>
-    <pre><code class="language-java">int n = 10;
+int n = 3;
 do {
-    System.out.println(n);
+    System.out.println("do-while: " + n); // 最低1回は実行される
     n--;
 } while (n > 0);</code></pre>
 
     <h3>break と continue</h3>
-    <pre><code class="language-java">for (int i = 1; i <= 10; i++) {
-    if (i == 5) break;       // ループを抜ける
-    if (i % 2 == 0) continue;// 次の繰り返しへスキップ
-    System.out.println(i);   // 1, 3 を表示
+    <pre class="runnable" data-wrap="main"><code class="language-java">for (int i = 1; i <= 10; i++) {
+    if (i == 5) break;        // ループを抜ける
+    if (i % 2 == 0) continue; // 次の繰り返しへスキップ
+    System.out.println(i);    // 1, 3 を表示
 }</code></pre>
-    <div class="tip">💡 回数が決まっているなら <code>for</code>、条件次第で回数が変わるなら <code>while</code> が使いやすいです。</div>
+    <div class="tip">💡 回数が決まっているなら <code>for</code>、条件次第で変わるなら <code>while</code>。</div>
+
+    <div class="quiz-block" data-quiz="loop"></div>
   </section>
 
   <!-- 8 -->
   <section id="array">
-    <h2>8. 配列</h2>
-    <p><strong>配列</strong>は同じ型のデータをまとめて扱う入れ物です。</p>
-    <pre><code class="language-java">// 宣言と初期化
-int[] scores = {80, 90, 75, 60};
+    <div class="sec-head"><h2>8. 配列</h2></div>
+    <p><strong>配列</strong>は同じ型のデータをまとめて扱う入れ物。番号（インデックス）は <strong>0から</strong>始まります。</p>
+    <div class="diagram array-diag">
+      <div class="idx"><span>0</span><span>1</span><span>2</span><span>3</span></div>
+      <div class="cells"><span>80</span><span>90</span><span>75</span><span>60</span></div>
+      <div class="arrlabel">int[] scores（length = 4）</div>
+    </div>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int[] scores = {80, 90, 75, 60};
 
 System.out.println(scores[0]);     // 80（最初は0番目）
 System.out.println(scores.length); // 4（要素数）
 
-scores[1] = 100;  // 値の書き換え
-
-// サイズだけ指定して作る
-int[] nums = new int[3];  // {0, 0, 0}
-nums[0] = 10;</code></pre>
-
-    <h3>配列のループ処理</h3>
-    <pre><code class="language-java">int[] scores = {80, 90, 75};
-
-// 通常のfor
-for (int i = 0; i < scores.length; i++) {
-    System.out.println(scores[i]);
-}
+scores[1] = 100;                   // 値の書き換え
 
 // 拡張for文（for-each）… 全要素を順番に
 for (int s : scores) {
@@ -311,19 +352,21 @@ for (int s : scores) {
 }</code></pre>
 
     <h3>2次元配列</h3>
-    <pre><code class="language-java">int[][] table = {
+    <pre class="runnable" data-wrap="main"><code class="language-java">int[][] table = {
     {1, 2, 3},
     {4, 5, 6}
 };
 System.out.println(table[1][2]); // 6</code></pre>
-    <div class="warn">⚠️ 存在しない番号にアクセスすると <code>ArrayIndexOutOfBoundsException</code> エラーになります。番号は <code>0</code> 〜 <code>length-1</code> まで。</div>
+    <div class="warn">⚠️ 存在しない番号にアクセスすると <code>ArrayIndexOutOfBoundsException</code>。番号は <code>0</code> 〜 <code>length-1</code> まで。上のコードで <code>scores[10]</code> を表示しようとするとどうなるか試してみよう。</div>
+
+    <div class="quiz-block" data-quiz="array"></div>
   </section>
 
   <!-- 9 -->
   <section id="method">
-    <h2>9. メソッド</h2>
+    <div class="sec-head"><h2>9. メソッド</h2></div>
     <p><strong>メソッド</strong>は処理に名前をつけてまとめたもの。同じ処理を何度も書かずに再利用できます。</p>
-    <pre><code class="language-java">public class MethodExample {
+    <pre class="runnable"><code class="language-java">public class Main {
 
     // 戻り値あり：2つの整数を足して返す
     static int add(int a, int b) {
@@ -336,7 +379,7 @@ System.out.println(table[1][2]); // 6</code></pre>
     }
 
     public static void main(String[] args) {
-        int sum = add(3, 5);   // 呼び出し
+        int sum = add(3, 5);     // 呼び出し
         System.out.println(sum); // 8
         greet("田中");
     }
@@ -349,17 +392,37 @@ System.out.println(table[1][2]); // 6</code></pre>
 }</code></pre>
 
     <h3>オーバーロード（同名で引数違い）</h3>
-    <pre><code class="language-java">static int add(int a, int b)         { return a + b; }
-static double add(double a, double b){ return a + b; }
-// 引数の型・数が違えば、同じ名前のメソッドを複数定義できる</code></pre>
-    <div class="tip">💡 「引数（ひきすう）」＝メソッドに渡す入力、「戻り値（もどりち）」＝メソッドが返す結果。</div>
+    <pre class="runnable"><code class="language-java">public class Main {
+    static int add(int a, int b)          { return a + b; }
+    static double add(double a, double b) { return a + b; }
+
+    public static void main(String[] args) {
+        System.out.println(add(2, 3));     // int版 → 5
+        System.out.println(add(2.5, 0.5)); // double版 → 3.0
+    }
+}</code></pre>
+    <div class="tip">💡 「引数（ひきすう）」＝メソッドに渡す入力、「戻り値（もどりち）」＝返す結果。引数の型・数が違えば同じ名前で複数定義できます（オーバーロード）。</div>
+
+    <div class="quiz-block" data-quiz="method"></div>
   </section>
 
   <!-- 10 -->
   <section id="class">
-    <h2>10. クラスとオブジェクト</h2>
-    <p>Javaの中心となる考え方です。<strong>クラス</strong>は「設計図」、<strong>オブジェクト（インスタンス）</strong>は設計図から作った「実物」です。</p>
-    <pre><code class="language-java">// 設計図（クラス）
+    <div class="sec-head"><h2>10. クラスとオブジェクト</h2></div>
+    <p>Javaの中心となる考え方。<strong>クラス＝設計図</strong>、<strong>オブジェクト（インスタンス）＝設計図から作った実物</strong>です。たい焼きの型がクラス、焼き上がったたい焼きがオブジェクト。</p>
+    <div class="diagram class-diag">
+      <div class="blueprint">
+        <div class="bp-title">class Person <small>（設計図）</small></div>
+        <div class="bp-row field">name, age <span>← フィールド（持っているデータ）</span></div>
+        <div class="bp-row method">introduce() <span>← メソッド（できること）</span></div>
+      </div>
+      <div class="bp-arrow">new →</div>
+      <div class="instances">
+        <div class="inst">佐藤 / 20</div>
+        <div class="inst">鈴木 / 25</div>
+      </div>
+    </div>
+    <pre class="runnable"><code class="language-java">// 設計図（クラス）
 class Person {
     String name;  // フィールド（属性）
     int age;
@@ -384,34 +447,30 @@ public class Main {
 
         p1.introduce(); // 私は佐藤、20歳です
         p2.introduce(); // 私は鈴木、25歳です
-
-        System.out.println(p1.name); // フィールドにアクセス
     }
 }</code></pre>
     <ul>
-      <li><strong>フィールド</strong> … オブジェクトが持つデータ（name, age）</li>
-      <li><strong>メソッド</strong> … オブジェクトの動作（introduce）</li>
-      <li><strong>コンストラクタ</strong> … <code>new</code> したときに自動で呼ばれる。初期値の設定に使う</li>
-      <li><code>this</code> … 「自分自身のオブジェクト」を指す</li>
+      <li><strong>フィールド</strong>…オブジェクトが持つデータ / <strong>メソッド</strong>…動作</li>
+      <li><strong>コンストラクタ</strong>…<code>new</code> したとき自動で呼ばれる初期化処理</li>
+      <li><code>this</code>…「自分自身のオブジェクト」</li>
     </ul>
+
+    <div class="quiz-block" data-quiz="class"></div>
   </section>
 
   <!-- 11 -->
   <section id="encapsulation">
-    <h2>11. カプセル化（アクセス修飾子）</h2>
-    <p>フィールドを外から勝手に書き換えられないように隠し、専用のメソッド（getter / setter）を通してアクセスさせる仕組みです。安全なプログラムの基本。</p>
-    <pre><code class="language-java">class BankAccount {
+    <div class="sec-head"><h2>11. カプセル化（アクセス修飾子）</h2></div>
+    <p>フィールドを外から勝手に書き換えられないように隠し、専用のメソッド（getter/setter）を通してアクセスさせる仕組み。安全なプログラムの基本です。</p>
+    <pre class="runnable"><code class="language-java">class BankAccount {
     private int balance = 0;   // private = クラスの外から直接触れない
 
-    // 預け入れ（不正な値をチェックできる）
     public void deposit(int amount) {
-        if (amount > 0) {
+        if (amount > 0) {       // 不正な値をチェックできる
             balance += amount;
         }
     }
-
-    // 残高を取得（getter）
-    public int getBalance() {
+    public int getBalance() {   // 残高を取得（getter）
         return balance;
     }
 }
@@ -420,8 +479,9 @@ public class Main {
     public static void main(String[] args) {
         BankAccount acc = new BankAccount();
         acc.deposit(1000);
-        // acc.balance = -999;  // ← privateなのでエラー（守られる）
-        System.out.println(acc.getBalance()); // 1000
+        acc.deposit(-500);  // 無視される（チェックしているから）
+        // acc.balance = 999999; // ← privateなのでコンパイルエラー（守られる）
+        System.out.println("残高: " + acc.getBalance()); // 1000
     }
 }</code></pre>
     <h3>アクセス修飾子</h3>
@@ -435,111 +495,95 @@ public class Main {
       </tbody>
     </table>
     <div class="tip">💡 「フィールドはprivate、操作はpublicメソッドで」が基本パターンです。</div>
+
+    <div class="quiz-block" data-quiz="encapsulation"></div>
   </section>
 
   <!-- 12 -->
   <section id="inheritance">
-    <h2>12. 継承</h2>
-    <p><strong>継承</strong>は既存のクラスの機能を引き継いで、新しいクラスを作る仕組みです。共通部分を親クラスにまとめられます。</p>
-    <pre><code class="language-java">// 親クラス（スーパークラス）
-class Animal {
+    <div class="sec-head"><h2>12. 継承</h2></div>
+    <p><strong>継承</strong>は既存クラスの機能を引き継いで新しいクラスを作る仕組み。共通部分を親クラスにまとめられます。</p>
+    <div class="diagram tree-diag">
+      <div class="tnode parent">Animal<small>name / eat()</small></div>
+      <div class="tlines"></div>
+      <div class="tchildren">
+        <div class="tnode">Dog<small>bark()</small></div>
+        <div class="tnode">Cat<small>eat() を上書き</small></div>
+      </div>
+    </div>
+    <pre class="runnable"><code class="language-java">class Animal {                 // 親クラス（スーパークラス）
     String name;
     Animal(String name) { this.name = name; }
-
-    void eat() {
-        System.out.println(name + "は食べる");
-    }
+    void eat() { System.out.println(name + "は食べる"); }
 }
 
-// 子クラス（サブクラス）… extends で継承
-class Dog extends Animal {
-    Dog(String name) {
-        super(name);  // 親のコンストラクタを呼ぶ
-    }
+class Dog extends Animal {      // 子クラス … extends で継承
+    Dog(String name) { super(name); }   // 親のコンストラクタを呼ぶ
+    void bark() { System.out.println(name + "はワンと鳴く"); }
+}
 
-    // 子クラス独自のメソッド
-    void bark() {
-        System.out.println(name + "はワンと鳴く");
-    }
+class Cat extends Animal {
+    Cat(String name) { super(name); }
+    @Override
+    void eat() { System.out.println(name + "は魚を食べる"); } // 上書き(オーバーライド)
 }
 
 public class Main {
     public static void main(String[] args) {
         Dog dog = new Dog("ポチ");
-        dog.eat();  // 親から継承 → ポチは食べる
-        dog.bark(); // 子で追加   → ポチはワンと鳴く
+        dog.eat();   // 親から継承 → ポチは食べる
+        dog.bark();  // 子で追加   → ポチはワンと鳴く
+
+        Cat cat = new Cat("タマ");
+        cat.eat();   // 上書き      → タマは魚を食べる
     }
 }</code></pre>
+    <div class="tip">💡 <code>@Override</code> は「親のメソッドを上書きします」という目印。書いておくと書き間違いを防げます。<code>super(...)</code> は親のコンストラクタ呼び出し。</div>
 
-    <h3>オーバーライド（親のメソッドを上書き）</h3>
-    <pre><code class="language-java">class Cat extends Animal {
-    Cat(String name) { super(name); }
-
-    @Override
-    void eat() {  // 親のeatを上書き
-        System.out.println(name + "は魚を食べる");
-    }
-}</code></pre>
-    <div class="tip">💡 <code>@Override</code> は「親のメソッドを上書きします」という目印。書いておくと書き間違いを防げます。</div>
+    <div class="quiz-block" data-quiz="inheritance"></div>
   </section>
 
   <!-- 13 -->
   <section id="polymorphism">
-    <h2>13. ポリモーフィズム / 抽象クラス</h2>
-    <p><strong>ポリモーフィズム（多態性）</strong>は、同じ呼び出しでもオブジェクトの種類によって違う動きをすることです。</p>
-    <pre><code class="language-java">Animal[] animals = { new Dog("ポチ"), new Cat("タマ") };
-
-for (Animal a : animals) {
-    a.eat();   // 同じ a.eat() でも、実際の型に応じて動きが変わる
+    <div class="sec-head"><h2>13. ポリモーフィズム / 抽象クラス</h2></div>
+    <p><strong>ポリモーフィズム（多態性）</strong>は、同じ呼び出しでもオブジェクトの種類によって違う動きをすること。</p>
+    <pre class="runnable"><code class="language-java">abstract class Shape {
+    abstract double area();           // 中身なし。子で必ず実装させる
+    void show() { System.out.println(getClass().getSimpleName() + "の面積は " + area()); }
 }
-// ポチは食べる
-// タマは魚を食べる</code></pre>
-
-    <h3>抽象クラス（abstract）</h3>
-    <p>「中身が未定のメソッド」を持つ、継承されることが前提のクラスです。直接<code>new</code>できません。</p>
-    <pre><code class="language-java">abstract class Shape {
-    abstract double area();  // 中身なし。子クラスで必ず実装させる
-
-    void show() {
-        System.out.println("面積は " + area());
-    }
-}
-
 class Circle extends Shape {
-    double r;
-    Circle(double r) { this.r = r; }
-
-    @Override
-    double area() { return r * r * 3.14; }  // 実装する
+    double r; Circle(double r){ this.r = r; }
+    @Override double area(){ return r * r * 3.14; }
+}
+class Rect extends Shape {
+    double w, h; Rect(double w, double h){ this.w = w; this.h = h; }
+    @Override double area(){ return w * h; }
 }
 
 public class Main {
     public static void main(String[] args) {
-        Shape s = new Circle(2);
-        s.show(); // 面積は 12.56
+        Shape[] shapes = { new Circle(2), new Rect(3, 4) };
+        for (Shape s : shapes) {
+            s.show();   // 同じ s.show() でも型に応じて結果が変わる
+        }
     }
 }</code></pre>
+    <div class="tip">💡 <strong>抽象クラス（abstract）</strong>は「中身が未定のメソッド」を持つ、継承前提のクラス。直接 <code>new</code> できず、子クラスが <code>area()</code> を必ず実装します。</div>
+
+    <div class="quiz-block" data-quiz="polymorphism"></div>
   </section>
 
   <!-- 14 -->
   <section id="interface">
-    <h2>14. インターフェース</h2>
-    <p><strong>インターフェース</strong>は「できること（メソッドの一覧）」だけを定めた約束ごとです。実装クラスは、その約束を必ず守ります。複数のインターフェースを同時に実装できます。</p>
-    <pre><code class="language-java">// インターフェース定義
-interface Flyable {
-    void fly();  // 中身は書かない（実装はクラス側で）
-}
-
-interface Swimmable {
-    void swim();
-}
+    <div class="sec-head"><h2>14. インターフェース</h2></div>
+    <p><strong>インターフェース</strong>は「できること（メソッドの一覧）」だけを定めた約束ごと。実装クラスはその約束を必ず守ります。複数同時に実装できるのが強み。</p>
+    <pre class="runnable"><code class="language-java">interface Flyable  { void fly();  }
+interface Swimmable{ void swim(); }
 
 // implements で実装（複数OK）
 class Duck implements Flyable, Swimmable {
-    @Override
-    public void fly()  { System.out.println("カモが飛ぶ"); }
-    @Override
-    public void swim() { System.out.println("カモが泳ぐ"); }
+    @Override public void fly()  { System.out.println("カモが飛ぶ"); }
+    @Override public void swim() { System.out.println("カモが泳ぐ"); }
 }
 
 public class Main {
@@ -553,82 +597,183 @@ public class Main {
     <table>
       <thead><tr><th></th><th>抽象クラス</th><th>インターフェース</th></tr></thead>
       <tbody>
-        <tr><td>継承/実装</td><td>extends（1つだけ）</td><td>implements（複数OK）</td></tr>
-        <tr><td>用途</td><td>共通の土台（is-a）</td><td>できることの約束（can-do）</td></tr>
+        <tr><td>使い方</td><td>extends（1つだけ）</td><td>implements（複数OK）</td></tr>
+        <tr><td>意味</td><td>共通の土台（is-a：〜である）</td><td>できることの約束（can-do：〜できる）</td></tr>
       </tbody>
     </table>
+
+    <div class="quiz-block" data-quiz="interface"></div>
   </section>
 
   <!-- 15 -->
+  <section id="enum">
+    <div class="sec-head"><h2>15. enum と record</h2></div>
+    <h3>enum（列挙型）：決まった選択肢を表す</h3>
+    <p>「曜日」「信号の色」「方向」のように、<strong>値が決まっている</strong>ものを型として表せます。タイプミスを防げて安全。</p>
+    <pre class="runnable"><code class="language-java">enum Signal { RED, YELLOW, GREEN }
+
+public class Main {
+    public static void main(String[] args) {
+        Signal s = Signal.RED;
+
+        String action = switch (s) {
+            case RED    -> "止まれ";
+            case YELLOW -> "注意";
+            case GREEN  -> "進め";
+        };
+        System.out.println(s + " → " + action);
+
+        for (Signal sig : Signal.values()) {  // 全要素を取得
+            System.out.println(sig);
+        }
+    }
+}</code></pre>
+
+    <h3>record：データを入れるだけのクラスを短く</h3>
+    <p>「名前と年齢を持つだけ」のようなデータ専用クラスは、<code>record</code> で1行で書けます（コンストラクタ・getter・toStringなどが自動生成）。</p>
+    <pre class="runnable"><code class="language-java">record Point(int x, int y) {}
+
+public class Main {
+    public static void main(String[] args) {
+        Point p = new Point(3, 4);
+        System.out.println(p);        // Point[x=3, y=4]（自動生成）
+        System.out.println(p.x());    // 3（getterも自動）
+        System.out.println(p.equals(new Point(3, 4))); // true（中身で比較）
+    }
+}</code></pre>
+    <div class="tip">💡 <code>record</code> はJava 16以降の機能。データの入れ物を作るときに非常に便利です。</div>
+
+    <div class="quiz-block" data-quiz="enum"></div>
+  </section>
+
+  <!-- 16 -->
+  <section id="generics">
+    <div class="sec-head"><h2>16. ジェネリクス</h2></div>
+    <p><strong>ジェネリクス</strong>は「型を後から指定できる」仕組み。<code>List&lt;String&gt;</code> の <code>&lt;String&gt;</code> がそれです。型を固定することで、安全（取り出すときにキャスト不要）になります。</p>
+    <pre class="runnable"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> names = new ArrayList<>();  // 文字列専用のリスト
+        names.add("佐藤");
+        // names.add(123);   // ← 型違いはコンパイルエラーで防げる
+
+        String first = names.get(0);  // キャスト不要で安全に取り出せる
+        System.out.println(first);
+    }
+}</code></pre>
+
+    <h3>自分でジェネリックなクラスを作る</h3>
+    <pre class="runnable"><code class="language-java">// T は「何かの型」を表すプレースホルダ
+class Box<T> {
+    private T value;
+    public void set(T value) { this.value = value; }
+    public T get() { return value; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Box<String> sBox = new Box<>();
+        sBox.set("こんにちは");
+        System.out.println(sBox.get());
+
+        Box<Integer> iBox = new Box<>();
+        iBox.set(100);
+        System.out.println(iBox.get() + 1); // 101
+    }
+}</code></pre>
+    <div class="tip">💡 <code>T</code> は慣習的な名前（Type）。<code>E</code>(Element)、<code>K</code>(Key)、<code>V</code>(Value) などもよく使われます。</div>
+
+    <div class="quiz-block" data-quiz="generics"></div>
+  </section>
+
+  <!-- 17 -->
   <section id="exception">
-    <h2>15. 例外処理</h2>
-    <p>プログラム実行中のエラー（例外）に対処する仕組みです。落ちずに対応できます。</p>
-    <pre><code class="language-java">public class Main {
+    <div class="sec-head"><h2>17. 例外処理</h2></div>
+    <p>プログラム実行中のエラー（例外）に対処する仕組み。これがあると、エラーで落ちずに対応できます。</p>
+    <pre class="runnable"><code class="language-java">public class Main {
     public static void main(String[] args) {
         try {
             int[] arr = {1, 2, 3};
-            System.out.println(arr[10]); // 範囲外！ 例外発生
+            System.out.println(arr[10]);  // 範囲外！ 例外発生
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("配列の範囲外です: " + e.getMessage());
         } finally {
             System.out.println("最後に必ず実行される");
         }
+        System.out.println("プログラムは続行します");
     }
 }</code></pre>
     <ul>
-      <li><code>try</code> … エラーが起こりそうな処理を囲む</li>
-      <li><code>catch</code> … 例外が起きたときの処理</li>
-      <li><code>finally</code> … 例外の有無にかかわらず必ず実行（後片付けに使う）</li>
+      <li><code>try</code>…エラーが起こりそうな処理を囲む</li>
+      <li><code>catch</code>…例外が起きたときの処理</li>
+      <li><code>finally</code>…例外の有無に関わらず必ず実行（後片付けに使う）</li>
     </ul>
 
     <h3>例外を自分で投げる（throw）</h3>
-    <pre><code class="language-java">static int divide(int a, int b) {
-    if (b == 0) {
-        throw new IllegalArgumentException("0で割れません");
+    <pre class="runnable"><code class="language-java">public class Main {
+    static int divide(int a, int b) {
+        if (b == 0) throw new IllegalArgumentException("0で割れません");
+        return a / b;
     }
-    return a / b;
+    public static void main(String[] args) {
+        System.out.println(divide(10, 2)); // 5
+        try {
+            divide(10, 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("エラー: " + e.getMessage());
+        }
+    }
 }</code></pre>
     <div class="warn">⚠️ よく出会う例外： <code>NullPointerException</code>（nullを使った）、<code>NumberFormatException</code>（数値変換失敗）、<code>ArrayIndexOutOfBoundsException</code>（配列範囲外）。</div>
+
+    <div class="quiz-block" data-quiz="exception"></div>
   </section>
 
-  <!-- 16 -->
+  <!-- 18 -->
   <section id="collection">
-    <h2>16. コレクション（List / Map / Set）</h2>
+    <div class="sec-head"><h2>18. コレクション（List / Map / Set）</h2></div>
     <p>配列より柔軟にデータを扱える仕組み。サイズが自由に変わります。</p>
-
     <h3>ArrayList（順番に並ぶリスト）</h3>
-    <pre><code class="language-java">import java.util.ArrayList;
+    <pre class="runnable"><code class="language-java">import java.util.ArrayList;
 import java.util.List;
 
-List<String> fruits = new ArrayList<>();
-fruits.add("りんご");
-fruits.add("みかん");
-fruits.add("ぶどう");
+public class Main {
+    public static void main(String[] args) {
+        List<String> fruits = new ArrayList<>();
+        fruits.add("りんご");
+        fruits.add("みかん");
+        fruits.add("ぶどう");
 
-System.out.println(fruits.get(0));  // りんご
-System.out.println(fruits.size());  // 3
-fruits.remove("みかん");
+        System.out.println(fruits.get(0));  // りんご
+        System.out.println(fruits.size());  // 3
+        fruits.remove("みかん");
 
-for (String f : fruits) {
-    System.out.println(f);
+        for (String f : fruits) System.out.println(f);
+    }
 }</code></pre>
 
     <h3>HashMap（キーと値のペア）</h3>
-    <pre><code class="language-java">import java.util.HashMap;
+    <pre class="runnable"><code class="language-java">import java.util.HashMap;
 import java.util.Map;
 
-Map<String, Integer> scores = new HashMap<>();
-scores.put("佐藤", 80);
-scores.put("鈴木", 95);
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> scores = new HashMap<>();
+        scores.put("佐藤", 80);
+        scores.put("鈴木", 95);
 
-System.out.println(scores.get("鈴木")); // 95
+        System.out.println(scores.get("鈴木")); // 95
 
-for (Map.Entry<String, Integer> e : scores.entrySet()) {
-    System.out.println(e.getKey() + ": " + e.getValue());
+        for (Map.Entry<String, Integer> e : scores.entrySet()) {
+            System.out.println(e.getKey() + ": " + e.getValue());
+        }
+    }
 }</code></pre>
 
     <h3>HashSet（重複なしの集合）</h3>
-    <pre><code class="language-java">import java.util.HashSet;
+    <pre class="runnable" data-wrap="main"><code class="language-java">import java.util.HashSet;
 import java.util.Set;
 
 Set<String> set = new HashSet<>();
@@ -636,164 +781,193 @@ set.add("A");
 set.add("A");  // 重複は無視される
 set.add("B");
 System.out.println(set.size()); // 2</code></pre>
-    <div class="tip">💡 <code>&lt;String&gt;</code> の部分は<strong>ジェネリクス</strong>。「このリストには文字列を入れる」と型を指定しています。</div>
+    <div class="tip">💡 <code>&lt;String&gt;</code> は<a href="#generics">ジェネリクス</a>。「このリストには文字列を入れる」と型を指定しています。</div>
+
+    <div class="quiz-block" data-quiz="collection"></div>
   </section>
 
-  <!-- 17 -->
+  <!-- 19 -->
   <section id="string">
-    <h2>17. 文字列操作</h2>
-    <pre><code class="language-java">String s = "Hello, Java";
+    <div class="sec-head"><h2>19. 文字列操作</h2></div>
+    <pre class="runnable" data-wrap="main"><code class="language-java">String s = "Hello, Java";
 
-System.out.println(s.length());          // 11  文字数
-System.out.println(s.charAt(0));         // H   指定位置の文字
-System.out.println(s.substring(7));      // Java 部分文字列
-System.out.println(s.toUpperCase());     // HELLO, JAVA
-System.out.println(s.replace("Java", "World")); // Hello, World
-System.out.println(s.contains("Java"));  // true
-System.out.println(s.indexOf("Java"));   // 7   位置
-System.out.println("  空白  ".trim());    // "空白"（前後の空白除去）
+System.out.println(s.length());                  // 11   文字数
+System.out.println(s.charAt(0));                 // H    指定位置の文字
+System.out.println(s.substring(7));              // Java 部分文字列
+System.out.println(s.toUpperCase());             // HELLO, JAVA
+System.out.println(s.replace("Java", "World"));  // Hello, World
+System.out.println(s.contains("Java"));          // true
+System.out.println(s.indexOf("Java"));           // 7    位置
+System.out.println("  空白  ".trim());            // 空白（前後の空白除去）
 
-// 分割
 String csv = "りんご,みかん,ぶどう";
-String[] parts = csv.split(",");  // ["りんご","みかん","ぶどう"]</code></pre>
+String[] parts = csv.split(",");                 // 分割
+System.out.println(parts.length);                // 3</code></pre>
 
-    <h3>文字列の比較は equals で！</h3>
-    <pre><code class="language-java">String a = "abc";
-String b = "abc";
-System.out.println(a == b);        // 当てにならない（参照の比較）
-System.out.println(a.equals(b));   // true ← 正しい中身の比較</code></pre>
+    <h3>文字列の比較は equals で！（重要）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">String a = new String("abc");
+String b = new String("abc");
+System.out.println(a == b);        // false（参照の比較＝当てにならない）
+System.out.println(a.equals(b));   // true （中身の比較＝正しい）</code></pre>
 
     <h3>数値と文字列の変換</h3>
-    <pre><code class="language-java">int n = Integer.parseInt("123");      // 文字列 → 整数
-String s = String.valueOf(123);       // 整数 → 文字列
-double d = Double.parseDouble("3.14");</code></pre>
-    <div class="warn">⚠️ 文字列の中身を比べるときは <code>==</code> ではなく必ず <code>.equals()</code> を使いましょう。これは初心者がよくハマる落とし穴です。</div>
+    <pre class="runnable" data-wrap="main"><code class="language-java">int n = Integer.parseInt("123");        // 文字列 → 整数
+String s = String.valueOf(123);         // 整数 → 文字列
+double d = Double.parseDouble("3.14");   // 文字列 → 小数
+System.out.println(n + 1);   // 124
+System.out.println(s + "!"); // 123!
+System.out.println(d * 2);   // 6.28</code></pre>
+    <div class="warn">⚠️ 文字列の中身を比べるときは <code>==</code> ではなく必ず <code>.equals()</code>。初心者が最もハマる落とし穴です。</div>
+
+    <div class="quiz-block" data-quiz="string"></div>
   </section>
 
-  <!-- 18 -->
+  <!-- 20 -->
+  <section id="fileio">
+    <div class="sec-head"><h2>20. ファイル入出力</h2></div>
+    <p>ファイルへの書き込み・読み込みは <code>java.nio.file</code> を使うと簡単です。下の例はファイルを作って書き込み、読み戻して表示します。</p>
+    <pre class="runnable"><code class="language-java">import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Path path = Path.of("memo.txt");
+
+        // 書き込み（リストの各要素が1行になる）
+        Files.write(path, List.of("1行目", "2行目", "3行目"));
+
+        // 読み込み（全行をListで取得）
+        List<String> lines = Files.readAllLines(path);
+        for (String line : lines) {
+            System.out.println("読込: " + line);
+        }
+
+        // まるごと1つの文字列で読む
+        String all = Files.readString(path);
+        System.out.println("文字数: " + all.length());
+    }
+}</code></pre>
+    <div class="warn">⚠️ ファイル操作は失敗しうる（存在しない・権限がない等）ので <code>IOException</code> が発生する可能性があります。上の例では <code>main</code> に <code>throws Exception</code> を付けて簡略化しています。実務では <a href="#exception">try-catch</a> で処理します。</div>
+
+    <div class="quiz-block" data-quiz="fileio"></div>
+  </section>
+
+  <!-- 21 -->
   <section id="modern">
-    <h2>18. ラムダ式とStream（発展）</h2>
-    <p>少し進んだ書き方ですが、現代のJavaでよく使われます。今は「こういうものがある」と知る程度でOK。</p>
-    <h3>ラムダ式（短い関数の書き方）</h3>
-    <pre><code class="language-java">import java.util.List;
+    <div class="sec-head"><h2>21. ラムダ式とStream</h2></div>
+    <p>現代のJavaでよく使う書き方。ループを書かずにデータを処理できます。</p>
+    <h3>ラムダ式（短い関数）</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">import java.util.List;
 
 List<String> names = List.of("佐藤", "鈴木", "田中");
-
-// forEach + ラムダ式
-names.forEach(name -> System.out.println(name));</code></pre>
+names.forEach(name -> System.out.println(name));  // 各要素に処理</code></pre>
 
     <h3>Stream（一覧データの加工）</h3>
-    <pre><code class="language-java">import java.util.List;
+    <pre class="runnable" data-wrap="main"><code class="language-java">import java.util.List;
 
 List<Integer> nums = List.of(1, 2, 3, 4, 5, 6);
 
 int sum = nums.stream()
-              .filter(n -> n % 2 == 0)   // 偶数だけ
-              .mapToInt(n -> n * 10)     // 10倍
-              .sum();                    // 合計
-System.out.println(sum); // 120 (2*10 + 4*10 + 6*10)</code></pre>
-    <div class="tip">💡 <code>filter</code>（絞り込み）→ <code>map</code>（変換）→ <code>collect/sum</code>（まとめる）という流れで、ループを書かずにデータを処理できます。</div>
+              .filter(n -> n % 2 == 0)  // 偶数だけ → 2,4,6
+              .mapToInt(n -> n * 10)    // 10倍     → 20,40,60
+              .sum();                   // 合計
+System.out.println(sum); // 120</code></pre>
+
+    <h3>もう一例：変換して集める</h3>
+    <pre class="runnable" data-wrap="main"><code class="language-java">import java.util.List;
+import java.util.stream.Collectors;
+
+List<String> names = List.of("sato", "suzuki", "tanaka");
+
+List<String> upper = names.stream()
+        .map(String::toUpperCase)   // 大文字に変換
+        .filter(s -> s.length() >= 5) // 5文字以上
+        .collect(Collectors.toList());
+
+System.out.println(upper); // [SUZUKI, TANAKA]</code></pre>
+    <div class="tip">💡 <code>filter</code>（絞り込み）→ <code>map</code>（変換）→ <code>collect / sum</code>（まとめる）の流れ。<code>String::toUpperCase</code> は「メソッド参照」という短縮記法です。</div>
+
+    <div class="quiz-block" data-quiz="modern"></div>
   </section>
 
-  <!-- 19 -->
+  <!-- 22 -->
   <section id="exercise">
-    <h2>19. 練習問題</h2>
-    <p>手を動かして書いてみましょう。解答は「解答を見る」を押すと表示されます。<strong>まずは自分で書いてから</strong>確認するのがおすすめです。</p>
+    <div class="sec-head"><h2>22. 練習問題</h2></div>
+    <p>手を動かして書いてみましょう。各問の「▶ 実行」でその場で動かせます。<strong>まず自分で書いてから</strong>「解答を見る」で確認するのがおすすめ。</p>
 
-    <div class="quiz">
-      <p class="q">Q1. 1から100までの整数の合計を計算して表示するプログラムを書いてください。</p>
-      <details>
-        <summary>解答を見る</summary>
-        <pre><code class="language-java">public class Q1 {
+    <div class="quiz exercise">
+      <p class="q">Q1. 1から100までの整数の合計を計算して表示してください。</p>
+      <details><summary>解答を見る</summary>
+        <pre class="runnable"><code class="language-java">public class Main {
     public static void main(String[] args) {
         int sum = 0;
-        for (int i = 1; i <= 100; i++) {
-            sum += i;
-        }
+        for (int i = 1; i <= 100; i++) sum += i;
         System.out.println(sum); // 5050
     }
 }</code></pre>
       </details>
     </div>
 
-    <div class="quiz">
-      <p class="q">Q2. FizzBuzz: 1〜30で、3の倍数なら「Fizz」、5の倍数なら「Buzz」、両方なら「FizzBuzz」、それ以外は数字を表示してください。</p>
-      <details>
-        <summary>解答を見る</summary>
-        <pre><code class="language-java">public class Q2 {
+    <div class="quiz exercise">
+      <p class="q">Q2. FizzBuzz：1〜30で、3の倍数は「Fizz」、5の倍数は「Buzz」、両方なら「FizzBuzz」、それ以外は数字を表示。</p>
+      <details><summary>解答を見る</summary>
+        <pre class="runnable"><code class="language-java">public class Main {
     public static void main(String[] args) {
         for (int i = 1; i <= 30; i++) {
-            if (i % 15 == 0)      System.out.println("FizzBuzz");
-            else if (i % 3 == 0)  System.out.println("Fizz");
-            else if (i % 5 == 0)  System.out.println("Buzz");
-            else                  System.out.println(i);
+            if (i % 15 == 0)     System.out.println("FizzBuzz");
+            else if (i % 3 == 0) System.out.println("Fizz");
+            else if (i % 5 == 0) System.out.println("Buzz");
+            else                 System.out.println(i);
         }
     }
 }</code></pre>
       </details>
     </div>
 
-    <div class="quiz">
-      <p class="q">Q3. <code>Person</code>クラス（名前・年齢を持つ）を作り、3人分を配列に入れて、全員の自己紹介を表示してください。</p>
-      <details>
-        <summary>解答を見る</summary>
-        <pre><code class="language-java">class Person {
-    String name;
-    int age;
-    Person(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-    void introduce() {
-        System.out.println(name + "（" + age + "歳）");
-    }
+    <div class="quiz exercise">
+      <p class="q">Q3. <code>Person</code>クラス（名前・年齢）を作り、3人を配列に入れて全員の自己紹介を表示。</p>
+      <details><summary>解答を見る</summary>
+        <pre class="runnable"><code class="language-java">class Person {
+    String name; int age;
+    Person(String name, int age) { this.name = name; this.age = age; }
+    void introduce() { System.out.println(name + "（" + age + "歳）"); }
 }
-
-public class Q3 {
+public class Main {
     public static void main(String[] args) {
         Person[] people = {
-            new Person("佐藤", 20),
-            new Person("鈴木", 25),
-            new Person("田中", 30)
+            new Person("佐藤", 20), new Person("鈴木", 25), new Person("田中", 30)
         };
-        for (Person p : people) {
-            p.introduce();
-        }
+        for (Person p : people) p.introduce();
     }
 }</code></pre>
       </details>
     </div>
 
-    <div class="quiz">
-      <p class="q">Q4. 整数のリストから、最大値を求めて表示してください（ArrayListを使用）。</p>
-      <details>
-        <summary>解答を見る</summary>
-        <pre><code class="language-java">import java.util.List;
-
-public class Q4 {
+    <div class="quiz exercise">
+      <p class="q">Q4. 整数リストから最大値を求めて表示（ArrayListを使用）。</p>
+      <details><summary>解答を見る</summary>
+        <pre class="runnable"><code class="language-java">import java.util.List;
+public class Main {
     public static void main(String[] args) {
         List<Integer> nums = List.of(34, 12, 89, 5, 67);
         int max = nums.get(0);
-        for (int n : nums) {
-            if (n > max) max = n;
-        }
+        for (int n : nums) if (n > max) max = n;
         System.out.println("最大値: " + max); // 89
     }
 }</code></pre>
       </details>
     </div>
 
-    <div class="quiz">
-      <p class="q">Q5. 文字列を受け取り、それが回文（前から読んでも後ろから読んでも同じ）かどうか判定してください。</p>
-      <details>
-        <summary>解答を見る</summary>
-        <pre><code class="language-java">public class Q5 {
+    <div class="quiz exercise">
+      <p class="q">Q5. 文字列が回文（前から読んでも後ろから読んでも同じ）か判定。</p>
+      <details><summary>解答を見る</summary>
+        <pre class="runnable"><code class="language-java">public class Main {
     static boolean isPalindrome(String s) {
         int i = 0, j = s.length() - 1;
         while (i < j) {
             if (s.charAt(i) != s.charAt(j)) return false;
-            i++;
-            j--;
+            i++; j--;
         }
         return true;
     }
@@ -804,37 +978,135 @@ public class Q4 {
 }</code></pre>
       </details>
     </div>
+
+    <div class="quiz-block" data-quiz="exercise"></div>
   </section>
 
-  <!-- 20 -->
-  <section id="next">
-    <h2>20. 次のステップ</h2>
-    <p>基礎をひと通り学んだら、次はこんな分野に進むと力がつきます。</p>
-    <ul>
-      <li><strong>ファイル入出力</strong> … <code>java.nio.file</code> でファイルの読み書き</li>
-      <li><strong>ジェネリクス・列挙型(enum)</strong> … より安全で表現力のあるコード</li>
-      <li><strong>例外設計</strong> … 独自例外クラスの作成</li>
-      <li><strong>ビルドツール</strong> … Maven / Gradle で依存関係を管理</li>
-      <li><strong>フレームワーク</strong> … Web開発なら <strong>Spring Boot</strong></li>
-      <li><strong>テスト</strong> … <strong>JUnit</strong> で自動テストを書く</li>
-    </ul>
-    <h3>学習のコツ</h3>
-    <ul>
-      <li>📝 コードは「読む」だけでなく必ず<strong>自分で書いて動かす</strong></li>
-      <li>🐛 エラーは敵ではなく先生。メッセージをよく読む</li>
-      <li>🔁 小さなプログラムをたくさん作って慣れる</li>
-    </ul>
-    <div class="tip">💡 公式ドキュメント（<a href="https://docs.oracle.com/javase/jp/" target="_blank" rel="noopener">Java SE ドキュメント</a>）も少しずつ読めるようになると一人前です。がんばって！</div>
+  <!-- 23 -->
+  <section id="playground" data-noprogress>
+    <div class="sec-head"><h2>23. プレイグラウンド</h2></div>
+    <p>自由にコードを書いて実行できます。学んだことを試したり、思いついたコードを動かしてみましょう。</p>
+    <div id="playground"></div>
+  </section>
+
+  <!-- 24 -->
+  <section id="cheatsheet">
+    <div class="sec-head"><h2>24. チートシート</h2></div>
+    <p>よく使う構文のまとめ。困ったときの早見表に。</p>
+    <div class="cheat-grid">
+      <div class="cheat">
+        <h4>変数・型</h4>
+        <pre><code class="language-java">int n = 10;
+double d = 1.5;
+boolean b = true;
+String s = "文字";
+final int MAX = 100;</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>条件分岐</h4>
+        <pre><code class="language-java">if (x > 0) { ... }
+else if (x == 0) { ... }
+else { ... }
+
+String r = (x > 0) ? "正" : "負";</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>繰り返し</h4>
+        <pre><code class="language-java">for (int i = 0; i < n; i++) {}
+for (int x : arr) {}
+while (cond) {}</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>配列</h4>
+        <pre><code class="language-java">int[] a = {1, 2, 3};
+a[0] = 9;
+int len = a.length;
+int[] b = new int[5];</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>メソッド</h4>
+        <pre><code class="language-java">static int add(int a, int b) {
+    return a + b;
+}
+void run() { ... } // 戻り値なし</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>クラス</h4>
+        <pre><code class="language-java">class Dog {
+    String name;
+    Dog(String n) { name = n; }
+    void bark() { ... }
+}
+Dog d = new Dog("ポチ");</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>List / Map</h4>
+        <pre><code class="language-java">List<String> list = new ArrayList<>();
+list.add("a");
+Map<String,Integer> m = new HashMap<>();
+m.put("key", 1);</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>例外処理</h4>
+        <pre><code class="language-java">try {
+    risky();
+} catch (Exception e) {
+    System.out.println(e.getMessage());
+}</code></pre>
+      </div>
+      <div class="cheat">
+        <h4>文字列</h4>
+        <pre><code class="language-java">s.length();
+s.substring(2);
+s.equals(t);   // 比較は equals!
+s.split(",");</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 25 -->
+  <section id="glossary">
+    <div class="sec-head"><h2>25. 用語集</h2></div>
+    <p>つまずきやすい用語を、ひとことで。</p>
+    <dl class="glossary">
+      <dt>変数</dt><dd>データを入れておく名前付きの箱。</dd>
+      <dt>型（データ型）</dt><dd>データの種類。int（整数）、String（文字列）など。</dd>
+      <dt>メソッド</dt><dd>名前をつけてまとめた処理。関数のこと。</dd>
+      <dt>引数（ひきすう）</dt><dd>メソッドに渡す入力データ。</dd>
+      <dt>戻り値（もどりち）</dt><dd>メソッドが返す結果。<code>return</code> で返す。</dd>
+      <dt>クラス</dt><dd>オブジェクトの設計図。データと処理をまとめたもの。</dd>
+      <dt>オブジェクト / インスタンス</dt><dd>クラスから <code>new</code> で作った実物。</dd>
+      <dt>フィールド</dt><dd>クラスが持つデータ（変数）。属性。</dd>
+      <dt>コンストラクタ</dt><dd><code>new</code> 時に呼ばれる初期化用の特別なメソッド。</dd>
+      <dt>this</dt><dd>「自分自身のオブジェクト」を指すキーワード。</dd>
+      <dt>継承</dt><dd>既存クラスの機能を引き継いで新クラスを作ること（extends）。</dd>
+      <dt>オーバーライド</dt><dd>親クラスのメソッドを子クラスで上書きすること。</dd>
+      <dt>オーバーロード</dt><dd>同じ名前で引数違いのメソッドを複数定義すること。</dd>
+      <dt>インターフェース</dt><dd>「できること」だけを定めた約束（implements）。</dd>
+      <dt>カプセル化</dt><dd>データを隠してメソッド経由で操作させ、安全にする考え方。</dd>
+      <dt>ポリモーフィズム</dt><dd>同じ呼び出しが対象の型で違う動きをすること（多態性）。</dd>
+      <dt>例外</dt><dd>実行中に起きるエラー。try-catchで対処する。</dd>
+      <dt>コレクション</dt><dd>List・Map・Setなど、データをまとめて扱う道具。</dd>
+      <dt>ジェネリクス</dt><dd>型を後から指定できる仕組み。<code>List&lt;String&gt;</code> など。</dd>
+      <dt>コンパイル</dt><dd>ソースコードを機械が実行できる形式に変換すること。</dd>
+      <dt>JVM</dt><dd>Java仮想マシン。バイトコードを実行する土台。</dd>
+      <dt>API</dt><dd>あらかじめ用意された機能の呼び出し口（標準ライブラリなど）。</dd>
+    </dl>
   </section>
 
   <footer>
-    <p>☕ Java基礎マスター — 自分の学習用に作成 / Made with Claude Code</p>
-    <button id="toTop" aria-label="トップへ戻る">↑ トップへ</button>
+    <p>☕ <strong>Java基礎マスター</strong> — 自分の学習用に作成</p>
+    <p class="foot-sub">コード実行：<a href="https://wandbox.org" target="_blank" rel="noopener">Wandbox</a> / ハイライト：Prism.js / エディタ：CodeMirror</p>
+    <button id="toTop">↑ トップへ戻る</button>
   </footer>
 </main>
 
+<!-- ライブラリ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="quiz-data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
